@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="SwitchButtonMD">
+        <item name="thumbDrawable">@drawable/button_md_thumb</item>
+        <item name="backColor">@color/md_back_color</item>
+        <item name="backMeasureRatio">1.45</item>
+        <item name="thumbMarginLeft">-16dp</item>
+        <item name="thumbMarginTop">-14dp</item>
+        <item name="thumbMarginRight">-16dp</item>
+        <item name="thumbMarginBottom">-14dp</item>
+        <item name="thumbWidth">@dimen/md_thumb_ripple_size</item>
+        <item name="thumbHeight">@dimen/md_thumb_ripple_size</item>
+    </style>
+</resources>
