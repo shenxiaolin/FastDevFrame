@@ -10,10 +10,8 @@ package com.fast.dev.frame.ui;
  * 版本：verson 1.0
  */
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-
 import com.fast.dev.frame.utils.LogUtils;
 
 
@@ -38,20 +36,20 @@ public abstract class AbstractActivity extends FrameActivity{
     }
 
     @Override
-    public void skipActivity(Activity activity, Class<?> cls) {
-        showActivity(activity, cls);
+    public void skipActivity(Class<?> cls) {
+        showActivity(cls);
         finish();
     }
 
     @Override
-    public void skipActivity(Activity activity, Intent intent) {
-        showActivity(activity, intent);
+    public void skipActivity(Intent intent) {
+        showActivity(intent);
         finish();
     }
 
     @Override
-    public void skipActivity(Activity activity, Class<?> cls, Bundle bundle) {
-        showActivity(activity, cls, bundle);
+    public void skipActivity(Class<?> cls, Bundle bundle) {
+        showActivity(cls, bundle);
         finish();
     }
 
@@ -59,36 +57,36 @@ public abstract class AbstractActivity extends FrameActivity{
      * 说明：显示Activity,但不finish
      */
     @Override
-    public void showActivity(Activity activity, Class<?> cls) {
-        Intent intent = new Intent(activity,cls);
-        activity.startActivity(intent);
+    public void showActivity(Class<?> cls) {
+        Intent intent = new Intent(this,cls);
+        startActivity(intent);
     }
 
     /**
      * 说明：显示Activity,但不finish
      */
     @Override
-    public void showActivityForResult(Activity activity, Class<?> cls,int requestCode) {
-        Intent intent = new Intent(activity,cls);
-        activity.startActivityForResult(intent,requestCode);
+    public void showActivityForResult(Class<?> cls,int requestCode) {
+        Intent intent = new Intent(this,cls);
+        startActivityForResult(intent,requestCode);
     }
 
     /**
      * 说明：显示Activity,但不finish
      */
     @Override
-    public void showActivity(Activity activity, Intent intent) {
-        activity.startActivity(intent);
+    public void showActivity(Intent intent) {
+        startActivity(intent);
     }
 
     /**
      * 说明：显示Activity,但不finish
      */
     @Override
-    public void showActivity(Activity activity, Class<?> cls, Bundle bundle) {
-        Intent intent = new Intent(activity,cls);
+    public void showActivity(Class<?> cls, Bundle bundle) {
+        Intent intent = new Intent(this,cls);
         intent.putExtras(bundle);
-        activity.startActivity(intent);
+        startActivity(intent);
     }
 
 }

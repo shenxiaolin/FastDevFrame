@@ -1,9 +1,9 @@
 package com.fast.dev.frame;
 
 import android.content.Intent;
-
 import com.fast.dev.frame.http.HttpTaskKey;
 import com.fast.dev.frame.ui.AbstractActivity;
+import com.fast.dev.frame.ui.Toast;
 
 /**
  * 说明：Activity基类
@@ -31,4 +31,25 @@ public abstract class BaseActivity extends AbstractActivity implements HttpTaskK
     public void getIntentData(Intent intent) {
 
     }
+
+    /***************************************************************************************/
+
+    public void shortToast(int res){
+        Toast.get().shortToast(res);
+    }
+    public void shortToast(String res){
+        Toast.get().shortToast(res);
+    }
+    public void longToast(String res){
+        Toast.get().longToast(res);
+    }
+    public void longToast(int res){
+        Toast.get().longToast(res);
+    }
+    public void cancelToast(){
+        Toast.get().cancelToast();
+    }
+
+    /***************************************************************************************/
+
 }

@@ -26,9 +26,4 @@ public abstract class JsonHttpCallBack extends StringHttpCallBack {
             onFailure(ERROR_RESPONSE_JSON_EXCEPTION,"数据转换异常");
         }
     }
-
-    @Override
-    public void onFailure(int errorCode, String msg) {
-
-    }
 }

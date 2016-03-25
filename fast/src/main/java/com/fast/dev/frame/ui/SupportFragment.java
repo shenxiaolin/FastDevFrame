@@ -71,11 +71,11 @@ public abstract class SupportFragment extends Fragment implements OnClickListene
     /**
      * 说明：点击事件
      */
-    protected void clickView(View v) {}
+    protected void clickView(View v,int id) {}
 
     @Override
     public void onClick(View v) {
-        clickView(v);
+        clickView(v,v.getId());
     }
 
     @Override

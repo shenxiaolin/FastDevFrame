@@ -14,11 +14,11 @@ import android.os.Bundle;
  * 版本：verson 1.0
  */
 public interface I_SkipActivity {
-    void skipActivity(Activity activity, Class<?> cls);
-    void skipActivity(Activity activity, Intent intent);
-    void skipActivity(Activity activity, Class<?> cls, Bundle bundle);
-    void showActivity(Activity activity, Class<?> cls);
-    void showActivity(Activity activity, Intent intent);
-    void showActivity(Activity activity, Class<?> cls, Bundle bundle);
-    void showActivityForResult(Activity activity, Class<?> cls, int requestCode);
+    void skipActivity(Class<?> cls);
+    void skipActivity(Intent intent);
+    void skipActivity(Class<?> cls, Bundle bundle);
+    void showActivity(Class<?> cls);
+    void showActivity(Intent intent);
+    void showActivity(Class<?> cls, Bundle bundle);
+    void showActivityForResult(Class<?> cls, int requestCode);
 }
