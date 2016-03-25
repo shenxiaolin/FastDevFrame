@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
 
-import com.fast.dev.frame.AbstractApplication;
+import com.fast.dev.frame.FastFrame;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,7 +39,7 @@ public final class SPUtils {
         }
         if (spMap.get(fileName) == null) {
             spUtils = new SPUtils(fileName);
-            spMap.put(fileName, AbstractApplication.getContext().getSharedPreferences(fileName,
+            spMap.put(fileName, FastFrame.getContext().getSharedPreferences(fileName,
                     Context.MODE_PRIVATE));
             spUtilsMap.put(fileName,spUtils);
         }else {
@@ -201,7 +201,7 @@ public final class SPUtils {
         if (!TextUtils.isEmpty(value)) {
             try{
                 value = Base64.encode(value.getBytes());
-                value = DESUtils.encryption(value, MD5.getMD5(AndroidInfoUtils.getAndroidId(AbstractApplication.getContext())).substring(0, 8));
+                value = DESUtils.encryption(value, MD5.getMD5(AndroidInfoUtils.getAndroidId()).substring(0, 8));
             }catch (Exception e){
                 LogUtils.e(e);
                 value = "";
@@ -219,7 +219,7 @@ public final class SPUtils {
     private String decodeValue(String value){
         if (!TextUtils.isEmpty(value)) {
             try{
-                value = DESUtils.decrypt(value, MD5.getMD5(AndroidInfoUtils.getAndroidId(AbstractApplication.getContext())).substring(0, 8));
+                value = DESUtils.decrypt(value, MD5.getMD5(AndroidInfoUtils.getAndroidId()).substring(0, 8));
                 value = new String(Base64.decode(value),"UTF-8");
             }catch (Exception e){
                 LogUtils.e(e);

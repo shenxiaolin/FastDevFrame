@@ -22,8 +22,8 @@ public class MainActivity extends CommonActivity {
     }
 
     @Override
-    public void clickView(View v) {
-        switch (v.getId()){
+    public void clickView(View v,int id) {
+        switch (id){
             case R.id.tv:
                 Toast.get().shortToast(R.string.tv_main);
                 break;

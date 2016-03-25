@@ -2,7 +2,7 @@ package com.fast.dev.frame.ui;
 
 import android.support.design.widget.Snackbar;
 
-import com.fast.dev.frame.AbstractApplication;
+import com.fast.dev.frame.FastFrame;
 import com.fast.dev.frame.utils.UIUtils;
 
 
@@ -64,7 +64,7 @@ public class Toast {
      */
     private android.widget.Toast showToast(String msg, int time) {
         if (mToast == null) {
-            mToast = android.widget.Toast.makeText(AbstractApplication.getContext(), msg, time);
+            mToast = android.widget.Toast.makeText(FastFrame.getContext(), msg, time);
         } else {
             mToast.setText(msg);
             mToast.setDuration(time);

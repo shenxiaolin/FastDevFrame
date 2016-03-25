@@ -19,30 +19,23 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 
-import com.fast.dev.frame.AbstractApplication;
+import com.fast.dev.frame.FastFrame;
 
 import java.lang.reflect.Field;
 
 public class UIUtils {
 
-    private static Context mContext = null;
+    private static Context mContext = FastFrame.getContext();
 
     /**
      * 说明：禁止实例化
      */
     private UIUtils(){}
 
-    private static void check(){
-        if (mContext == null){
-            mContext = AbstractApplication.getContext();
-        }
-    }
-
     /**
      * 根据手机的分辨率从 dp 的单位 转成为 px(像素)
      */
     public static int dip2px(float dpValue) {
-        check();
         Resources r = mContext.getResources();
         float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                 dpValue, r.getDisplayMetrics());
@@ -53,7 +46,6 @@ public class UIUtils {
      * 根据手机的分辨率从 px(像素) 的单位 转成为 dp
      */
     public static int px2dip(float pxValue) {
-        check();
         final float scale = mContext.getResources().getDisplayMetrics().density;
         return (int) (pxValue / scale + 0.5f);
     }
@@ -62,7 +54,6 @@ public class UIUtils {
      * 根据手机的分辨率从 px(像素) 的单位 转成为 sp
      */
     public static int px2sp(float pxValue) {
-        check();
         float fontScale = mContext.getResources().getDisplayMetrics().scaledDensity;
         return (int) (pxValue / fontScale + 0.5f);
     }
@@ -71,7 +62,6 @@ public class UIUtils {
      * 根据手机的分辨率从 sp 的单位 转成为 px
      */
     public static int sp2px(float spValue) {
-        check();
         float fontScale = mContext.getResources().getDisplayMetrics().scaledDensity;
         return (int) (spValue * fontScale + 0.5f);
     }
@@ -90,7 +80,6 @@ public class UIUtils {
      * @return
      */
     public static String[] getStringArray(int id) {
-        check();
         return getResource().getStringArray(id);
     }
 
@@ -100,7 +89,6 @@ public class UIUtils {
      * @return
      */
     public static String getString(int id) {
-        check();
         return getResource().getString(id);
     }
     /**
@@ -109,7 +97,6 @@ public class UIUtils {
      * @return
      */
     public static int getColor(int id) {
-        check();
         return getResource().getColor(id);
     }
     /**
@@ -117,7 +104,6 @@ public class UIUtils {
      * @return
      */
     public static int screenWidth(){
-        check();
         WindowManager wm = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
         DisplayMetrics dm = new DisplayMetrics();
         wm.getDefaultDisplay().getMetrics(dm);
@@ -128,7 +114,6 @@ public class UIUtils {
      * @return
      */
     public static int screenHeight(){
-        check();
         WindowManager wm = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
         DisplayMetrics dm = new DisplayMetrics();
         wm.getDefaultDisplay().getMetrics(dm);
@@ -139,7 +124,6 @@ public class UIUtils {
      * @return
      */
     public static float density(){
-        check();
         WindowManager wm = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
         DisplayMetrics dm = new DisplayMetrics();
         wm.getDefaultDisplay().getMetrics(dm);
@@ -151,7 +135,6 @@ public class UIUtils {
      * @return
      */
     public static int getStatusBarHeight(){
-        check();
         int height = 0;
         try {
             Class<?> clazz = Class.forName("com.android.internal.R$dimen");
@@ -173,7 +156,6 @@ public class UIUtils {
      * @return
      */
     public static View inflate(int id,ViewGroup group,boolean flag){
-        check();
         return LayoutInflater.from(mContext).inflate(id,group,flag);
     }
     /**
@@ -182,18 +164,8 @@ public class UIUtils {
      * @return
      */
     public static View inflate(int id){
-        check();
         return LayoutInflater.from(mContext).inflate(id,null,false);
     }
-
-//    /**
-//     * 说明：获取控件高度
-//     * @param view
-//     * @return
-//     */
-//    public static int getViewHeight(View view){
-//        viewview.getViewTreeObserver()
-//    }
 }
 
 

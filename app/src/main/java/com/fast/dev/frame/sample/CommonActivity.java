@@ -27,7 +27,7 @@ public class CommonActivity extends AbstractActivity {
     }
 
     @Override
-    public void clickView(View v) {
+    public void clickView(View v,int id) {
 
     }
 

@@ -21,7 +21,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
-import com.fast.dev.frame.AbstractApplication;
+import com.fast.dev.frame.FastFrame;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -45,7 +45,6 @@ import java.util.Map;
  * <p/>
  * 版本：verson 1.0
  */
-
 public final class ToolUtils {
 
     /**
@@ -309,8 +308,8 @@ public final class ToolUtils {
     public static String collectErrorInfo(Throwable ex) {
         Map<String, String> infos = new HashMap<String, String>();
         try {
-            PackageManager pm = AbstractApplication.getContext().getPackageManager();
-            PackageInfo pi = pm.getPackageInfo(AbstractApplication.getContext().getPackageName(),
+            PackageManager pm = FastFrame.getContext().getPackageManager();
+            PackageInfo pi = pm.getPackageInfo(FastFrame.getContext().getPackageName(),
                     PackageManager.GET_ACTIVITIES);
             if (pi != null) {
                 String versionName = pi.versionName == null ? "null"

@@ -2,7 +2,7 @@ package com.fast.dev.frame.http;
 
 import android.content.Context;
 
-import com.fast.dev.frame.AbstractApplication;
+import com.fast.dev.frame.FastFrame;
 import com.fast.dev.frame.utils.Constant;
 import com.fast.dev.frame.utils.StringUtils;
 import com.squareup.okhttp.OkHttpClient;
@@ -221,7 +221,7 @@ public class HttpConfig {
      * @return
      */
     private static HttpConfig getDefaultHttpConfig(){
-        HttpConfig config = new Builder(AbstractApplication.getContext())
+        HttpConfig config = new Builder(FastFrame.getContext())
                                          .setTimeout(Constant.Http.TIMEOUT)
                                          .build();
         config.init();

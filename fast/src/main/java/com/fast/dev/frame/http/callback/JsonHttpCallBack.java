@@ -1,5 +1,6 @@
 package com.fast.dev.frame.http.callback;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -11,11 +12,19 @@ import org.json.JSONObject;
  * <p/>
  * 版本：verson 1.0
  */
-public class JsonHttpCallBack extends BaseHttpCallBack<JSONObject> {
+public abstract class JsonHttpCallBack extends StringHttpCallBack {
+
+    public abstract void onSuccess(JSONObject result);
 
     @Override
-    public void onSuccess(JSONObject result) {
-
+    public void onSuccess(String result) {
+        try {
+            JSONObject jsonObject = new JSONObject(result);
+            onSuccess(jsonObject);
+        }catch (JSONException e){
+            e.printStackTrace();
+            onFailure(ERROR_RESPONSE_JSON_EXCEPTION,"数据转换异常");
+        }
     }
 
     @Override

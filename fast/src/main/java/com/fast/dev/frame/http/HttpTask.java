@@ -3,7 +3,7 @@ package com.fast.dev.frame.http;
 import android.os.AsyncTask;
 import android.text.TextUtils;
 
-import com.fast.dev.frame.http.callback.ResultHttpCallBack;
+import com.fast.dev.frame.http.callback.ModelHttpCallBack;
 import com.fast.dev.frame.http.callback.BaseHttpCallBack;
 import com.fast.dev.frame.http.callback.JsonHttpCallBack;
 import com.fast.dev.frame.http.callback.StringHttpCallBack;
@@ -224,7 +224,7 @@ public class HttpTask extends AsyncTask<Void,Void,ResponseData>{
             }
             if (callback instanceof StringHttpCallBack){
                 callback.onSuccess(result);
-            }else if (callback instanceof ResultHttpCallBack){
+            }else if (callback instanceof ModelHttpCallBack){
                 try {
                     Object obj = GsonUtils.toBean(result,callback.getClazz());
                     if (obj != null){

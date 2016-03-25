@@ -21,7 +21,7 @@ public interface I_Activity {
     /*在线程中初始化数据*/
     void onInitThread();
     /*点击事件回调方法*/
-    void clickView(View view);
+    void clickView(View view,int id);
     /*获取数据*/
     void getIntentData(Intent intent);
 }

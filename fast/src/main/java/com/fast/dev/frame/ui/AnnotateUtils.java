@@ -40,6 +40,7 @@ public class AnnotateUtils {
                 method.invoke(activity,layoutId);
             }catch (Exception e){
                 e.printStackTrace();
+                isBind = false;
             }
         }
         return isBind;

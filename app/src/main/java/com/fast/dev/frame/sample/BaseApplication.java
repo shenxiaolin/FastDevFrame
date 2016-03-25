@@ -1,6 +1,8 @@
 package com.fast.dev.frame.sample;
 
-import com.fast.dev.frame.AbstractApplication;
+import android.app.Application;
+
+import com.fast.dev.frame.FastFrame;
 
 /**
  * 说明：
@@ -11,5 +13,11 @@ import com.fast.dev.frame.AbstractApplication;
  * <p/>
  * 版本：verson 1.0
  */
-public class BaseApplication extends AbstractApplication {
+public class BaseApplication extends Application {
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        FastFrame.init(this);
+    }
 }

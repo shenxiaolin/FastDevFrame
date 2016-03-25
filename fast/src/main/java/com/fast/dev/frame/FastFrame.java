@@ -3,22 +3,20 @@ package com.fast.dev.frame;
 import android.app.Application;
 
 /**
- * 说明：AbstractApplication
+ * 说明：初始化
  * <p/>
  * 作者：fanly
  * <p/>
- * 时间：2015/12/26 10:34
+ * 时间：2016/3/25 20:39
  * <p/>
  * 版本：verson 1.0
  */
-public class AbstractApplication extends Application{
+public class FastFrame {
 
     private static Application mApplication;
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        mApplication = this;
+    public static void init(Application application){
+        mApplication = application;
     }
 
     /**
@@ -28,4 +26,5 @@ public class AbstractApplication extends Application{
     public static Application getContext(){
         return mApplication;
     }
+
 }

@@ -12,7 +12,7 @@ package com.fast.dev.frame.utils;
 
 import android.content.Context;
 
-import com.fast.dev.frame.AbstractApplication;
+import com.fast.dev.frame.FastFrame;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -28,7 +28,7 @@ public class ResourceUtils {
 
     private static void check(){
         if (mContext == null){
-            mContext = AbstractApplication.getContext();
+            mContext = FastFrame.getContext();
         }
     }
 

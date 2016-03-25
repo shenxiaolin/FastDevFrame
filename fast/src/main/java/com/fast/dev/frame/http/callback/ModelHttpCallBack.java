@@ -12,9 +12,9 @@ import java.lang.reflect.Type;
  * <p/>
  * 版本：verson 1.0
  */
-public abstract class ResultHttpCallBack<T> extends BaseHttpCallBack<T>{
+public abstract class ModelHttpCallBack<T> extends BaseHttpCallBack<T>{
 
-    public ResultHttpCallBack(){
+    public ModelHttpCallBack(){
         Type genType = getClass().getGenericSuperclass();
         Type[] params = ((ParameterizedType) genType).getActualTypeArguments();
         clazz = (Class) params[0];

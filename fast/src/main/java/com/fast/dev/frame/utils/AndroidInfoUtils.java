@@ -16,6 +16,8 @@ import android.provider.Settings.Secure;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 
+import com.fast.dev.frame.FastFrame;
+
 import java.io.File;
 
 /**
@@ -35,13 +37,11 @@ public final class AndroidInfoUtils {
     /**
      * 说明：获取手机网络状态是否可用
      *
-     * @param context
-     *            当前上下文环境
      * @return 返回网络状态【true:网络联通】【false:网络断开】
      */
-    public static boolean isNetConnected(Context context) {
+    public static boolean isNetConnected() {
         try {
-            ConnectivityManager connectivityManager = (ConnectivityManager) context
+            ConnectivityManager connectivityManager = (ConnectivityManager) FastFrame.getContext()
                     .getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo network = connectivityManager.getActiveNetworkInfo();
             if (connectivityManager != null) {
@@ -60,14 +60,12 @@ public final class AndroidInfoUtils {
     /**
      * 说明：获取手机IMEI号码
      *
-     * @param context
-     *            上下文环境
      * @return 返回手机IMEI号码
      */
-    public static String getImeiCode(Context context) {
+    public static String getImeiCode() {
         String result = "";
         try {
-            final TelephonyManager tm = (TelephonyManager) context
+            final TelephonyManager tm = (TelephonyManager) FastFrame.getContext()
                     .getSystemService(Context.TELEPHONY_SERVICE);
             result = tm.getDeviceId();
         } catch (Exception e) {
@@ -79,14 +77,12 @@ public final class AndroidInfoUtils {
     /**
      * 说明：获取手机IMSI号码
      *
-     * @param context
-     *            上下文环境
      * @return 返回手机IMEI号码
      */
-    public static String getImsiCode(Context context) {
+    public static String getImsiCode() {
         String result = "";
         try {
-            final TelephonyManager tm = (TelephonyManager) context
+            final TelephonyManager tm = (TelephonyManager) FastFrame.getContext()
                     .getSystemService(Context.TELEPHONY_SERVICE);
             result = tm.getSubscriberId();
         } catch (Exception e) {
@@ -98,12 +94,10 @@ public final class AndroidInfoUtils {
     /**
      * 获取手机Android_ID
      *
-     * @param context
-     *            Context
      * @return MacAddress String
      */
-    public static String getAndroidId(Context context) {
-        String androidId = Secure.getString(context.getContentResolver(),
+    public static String getAndroidId() {
+        String androidId = Secure.getString(FastFrame.getContext().getContentResolver(),
                 Secure.ANDROID_ID);
         return androidId;
     }
@@ -111,14 +105,12 @@ public final class AndroidInfoUtils {
     /**
      * 说明：获取本机手机号码
      *
-     * @param context
-     *            上下文环境
      * @return 返回本机手机号码
      */
-    public static String getMobilNumber(Context context) {
+    public static String getMobilNumber() {
         String result = "";
         try {
-            final TelephonyManager tm = (TelephonyManager) context
+            final TelephonyManager tm = (TelephonyManager) FastFrame.getContext()
                     .getSystemService(Context.TELEPHONY_SERVICE);
             result = tm.getLine1Number();
         } catch (Exception e) {
@@ -139,14 +131,12 @@ public final class AndroidInfoUtils {
     /**
      * 说明：获取手机MAC地址
      *
-     * @param context
-     *            上下文环境
      * @return 返回手机MAC地址
      */
-    public static String getMacAddress(Context context) {
+    public static String getMacAddress() {
         String res = "";
         try {
-            final WifiManager wifiManager = (WifiManager) context
+            final WifiManager wifiManager = (WifiManager) FastFrame.getContext()
                     .getSystemService(Context.WIFI_SERVICE);
             final WifiInfo info = wifiManager.getConnectionInfo();
             if (null != info) {
@@ -164,14 +154,13 @@ public final class AndroidInfoUtils {
     /**
      * 说明：获取当前应用程序的VersionName
      *
-     * @param context
      *            当前上下文环境
      * @return 返回当前应用的版本号
      */
-    public static String getAppVersionName(Context context) {
+    public static String getAppVersionName() {
         try {
-            PackageInfo info = context.getPackageManager().getPackageInfo(
-                    context.getPackageName(), 0);
+            PackageInfo info = FastFrame.getContext().getPackageManager().getPackageInfo(
+                    FastFrame.getContext().getPackageName(), 0);
             return info.versionName;
         } catch (NameNotFoundException e) {
             e.printStackTrace();
@@ -182,14 +171,12 @@ public final class AndroidInfoUtils {
     /**
      * 说明：获取当前应用程序的VersionCode
      *
-     * @param context
-     *            当前上下文环境
      * @return 返回当前应用的版本号
      */
-    public static int getAppVersionCode(Context context) {
+    public static int getAppVersionCode() {
         try {
-            PackageInfo info = context.getPackageManager().getPackageInfo(
-                    context.getPackageName(), 0);
+            PackageInfo info = FastFrame.getContext().getPackageManager().getPackageInfo(
+                    FastFrame.getContext().getPackageName(), 0);
             return info.versionCode;
         } catch (NameNotFoundException e) {
             e.printStackTrace();
@@ -207,9 +194,9 @@ public final class AndroidInfoUtils {
      *         int NETTYPE_3G = 3;
      *         int NETTYPE_4G = 4;
      */
-    public static int getNetWorkType(Context context) {
+    public static int getNetWorkType() {
         int strNetworkType = 0;
-        NetworkInfo networkInfo = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE))
+        NetworkInfo networkInfo = ((ConnectivityManager) FastFrame.getContext().getSystemService(Context.CONNECTIVITY_SERVICE))
                 .getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
             if (networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
@@ -271,19 +258,15 @@ public final class AndroidInfoUtils {
     /**
      * 说明：获取设备终端码
      *
-     * @param context
      * @return
-     * @throws Exception
      */
-    public static String getTerminalCode(Context context) {
-        String terminal = null;
+    public static String getTerminalCode() {
         try {
-            terminal = MD5.getMD5(getImeiCode(context)
-                    + getImsiCode(context) + getAndroidId(context));
+            return  MD5.getMD5(getImeiCode() + getImsiCode() + getAndroidId());
         } catch (Exception e) {
             e.printStackTrace();
+            return "";
         }
-        return terminal;
     }
 
     /**
@@ -298,12 +281,10 @@ public final class AndroidInfoUtils {
     /**
      * 获取设备的可用内存大小
      *
-     * @param cxt
-     *            应用上下文对象context
      * @return 当前内存大小
      */
-    public static int getDeviceUsableMemory(Context cxt) {
-        ActivityManager am = (ActivityManager) cxt
+    public static int getDeviceUsableMemory() {
+        ActivityManager am = (ActivityManager) FastFrame.getContext()
                 .getSystemService(Context.ACTIVITY_SERVICE);
         MemoryInfo mi = new MemoryInfo();
         am.getMemoryInfo(mi);

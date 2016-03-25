@@ -29,14 +29,14 @@ import java.util.Map;
  * 版本：verson 1.0
  */
 
-public class CrashHandler implements UncaughtExceptionHandler {
+public abstract class CrashHandler implements UncaughtExceptionHandler {
 
     private static String crashFile;
     protected static Context mContext;
     // 错误日志文件名
-    private String fileName = "";
+    private String fileName = "crash";
     // 用来存储设备信息和异常信息
-    private Map<String, String> infos = new HashMap<String, String>();
+    private Map<String, String> infos = new HashMap<>();
 
     /**
      * 说明：禁止实例化
@@ -48,8 +48,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
     @Override
     public void uncaughtException(Thread thread, Throwable ex) {
         //生成错误日志文件名
-        fileName = AndroidInfoUtils.getAndroidId(mContext)+"_crash_"
-                + DateUtils.getNowTime(DateUtils.FORMAT_YYYY_MM_DD_HH_MM_SS_4)+".txt";
+        fileName = setFileName();
         // 处理异常
         handleException(ex, crashFile);
         SystemClock.sleep(3000);
@@ -165,7 +164,12 @@ public class CrashHandler implements UncaughtExceptionHandler {
      *
      * @param file
      */
-    public void upLog(File file) {}
+    public abstract void upLog(File file);
+
+    /**
+     * 说明：设置文件名
+     */
+    public abstract String setFileName();
 
     /**
      * 说明：程序崩溃退出时调用
