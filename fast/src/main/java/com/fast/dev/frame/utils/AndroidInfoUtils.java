@@ -292,6 +292,26 @@ public final class AndroidInfoUtils {
         return (int) (mi.availMem / (1024 * 1024));
     }
 
+    /**
+     * 说明：获取当前线程名称
+     * @return
+     */
+    public static String getCurProcessName(){
+        int pid = android.os.Process.myPid();
+
+        ActivityManager activityManager = (ActivityManager) FastFrame.getContext()
+                .getSystemService(Context.ACTIVITY_SERVICE);
+
+        for (ActivityManager.RunningAppProcessInfo appProcess : activityManager
+                .getRunningAppProcesses()) {
+
+            if (appProcess.pid == pid) {
+                return appProcess.processName;
+            }
+        }
+        return null;
+    }
+
     /******************************* 网络类型 ****************************************/
 
     public static class NetWorkType{
