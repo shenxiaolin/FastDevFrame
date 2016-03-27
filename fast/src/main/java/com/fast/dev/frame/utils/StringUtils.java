@@ -17,7 +17,7 @@ public final class StringUtils {
     private final static Pattern emailer = Pattern
             .compile("\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*");
     private final static Pattern phone = Pattern
-            .compile("^((13[0-9])|(15[^4,\\D])|(18[0,5-9]))\\d{8}$");
+            .compile("1\\d{10}$");
 
     /**
      * 说明：判断给定字符串是否空白串 空白串是指由空格、制表符、回车符、换行符组成的字符串 若输入字符串为null或空字符串，返回true
