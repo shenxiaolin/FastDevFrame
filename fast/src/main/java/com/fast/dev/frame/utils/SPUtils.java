@@ -39,7 +39,7 @@ public final class SPUtils {
         }
         if (spMap.get(fileName) == null) {
             spUtils = new SPUtils(fileName);
-            spMap.put(fileName, FastFrame.getContext().getSharedPreferences(fileName,
+            spMap.put(fileName, FastFrame.getApplication().getSharedPreferences(fileName,
                     Context.MODE_PRIVATE));
             spUtilsMap.put(fileName,spUtils);
         }else {

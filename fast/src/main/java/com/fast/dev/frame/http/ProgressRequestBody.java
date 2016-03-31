@@ -1,11 +1,9 @@
 package com.fast.dev.frame.http;
 
-import com.fast.dev.frame.http.callback.BaseHttpCallBack;
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.RequestBody;
-
 import java.io.IOException;
 
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import okio.Buffer;
 import okio.BufferedSink;
 import okio.ForwardingSink;
@@ -25,15 +23,15 @@ public class ProgressRequestBody extends RequestBody{
     //请求体
     private final RequestBody requestBody;
     //回调
-    private final BaseHttpCallBack callback;
+    private final HttpTask httpTask;
     //包装完成
     private BufferedSink bufferedSink;
     //加载速度
     private long mPreviousTime;
 
-    public ProgressRequestBody(RequestBody body,BaseHttpCallBack callback){
+    public ProgressRequestBody(RequestBody body,HttpTask httpTask){
         this.requestBody = body;
-        this.callback = callback;
+        this.httpTask = httpTask;
     }
 
     @Override
@@ -74,7 +72,7 @@ public class ProgressRequestBody extends RequestBody{
                 bytesWritten += byteCount;
 
                 //回调
-                if (callback!=null) {
+                if (httpTask!=null) {
                     //计算下载速度
                     long totalTime = (System.currentTimeMillis() - mPreviousTime)/1000;
                     if ( totalTime == 0 ) {
@@ -82,7 +80,8 @@ public class ProgressRequestBody extends RequestBody{
                     }
                     long networkSpeed = bytesWritten / totalTime;
                     int progress = (int)(bytesWritten * 100 / contentLength);
-                    callback.onProgress(progress, networkSpeed, bytesWritten == contentLength);
+                    boolean done = bytesWritten == contentLength;
+                    httpTask.updateProgress(progress,networkSpeed,done?1:0);
                 }
             }
         };

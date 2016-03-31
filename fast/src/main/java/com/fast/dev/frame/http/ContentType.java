@@ -13,7 +13,8 @@ public enum  ContentType {
 
     TEXT("text/plain; charset=UTF-8"),
     PNG("image/png; charset=UTF-8"),
-    JPEG("image/jpeg; charset=UTF-8");
+    JPEG("image/jpeg; charset=UTF-8"),
+    JSON("application/json; charset=UTF-8");
 
     private String contentType;
 

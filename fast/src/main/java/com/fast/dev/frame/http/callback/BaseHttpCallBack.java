@@ -1,5 +1,8 @@
 package com.fast.dev.frame.http.callback;
 
+import okhttp3.Headers;
+import okhttp3.Response;
+
 /**
  * 说明：HttpCallBack基类
  * <p/>
@@ -23,6 +26,7 @@ public abstract class BaseHttpCallBack<T> {
     public static final int ERROR_RESPONSE_NO_NETWORK = 1005;
 
     protected Class<T> clazz;
+    protected Headers headers;
 
     public BaseHttpCallBack(){
     }
@@ -44,6 +48,12 @@ public abstract class BaseHttpCallBack<T> {
     public abstract void onSuccess(T result);
 
     /**
+     * 说明：访问网络成功后执行
+     * @param result
+     */
+    public void onSuccess(Headers headers,T result){}
+
+    /**
      * 说明：访问网络失败后执行
      * @param errorCode
      * @param msg
@@ -62,4 +72,18 @@ public abstract class BaseHttpCallBack<T> {
         return clazz;
     }
 
+    public Headers getHeaders(){
+        return headers;
+    }
+
+    public void setResponseHeaders(Headers headers){
+        this.headers = headers;
+    }
+
+    public void onResponse(Response httpResponse, String response, Headers headers) {
+
+    }
+
+    public void onResponse(String response, Headers headers) {
+    }
 }

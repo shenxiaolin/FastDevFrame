@@ -6,15 +6,17 @@ import com.fast.dev.frame.http.HttpConfig;
 import com.fast.dev.frame.utils.FileUtils;
 import com.fast.dev.frame.utils.LogUtils;
 import com.fast.dev.frame.utils.StringUtils;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * 说明：DownloadHttpTask

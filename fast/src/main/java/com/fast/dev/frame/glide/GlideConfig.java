@@ -2,23 +2,17 @@ package com.fast.dev.frame.glide;
 
 import android.content.Context;
 import android.os.Environment;
-
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.GlideBuilder;
-import com.bumptech.glide.integration.okhttp.OkHttpUrlLoader;
 import com.bumptech.glide.load.DecodeFormat;
 import com.bumptech.glide.load.engine.cache.DiskCache;
 import com.bumptech.glide.load.engine.cache.DiskLruCacheFactory;
 import com.bumptech.glide.load.engine.cache.ExternalCacheDiskCacheFactory;
 import com.bumptech.glide.load.engine.cache.InternalCacheDiskCacheFactory;
-import com.bumptech.glide.load.model.GlideUrl;
 import com.bumptech.glide.module.GlideModule;
-import com.fast.dev.frame.http.HttpConfig;
 import com.fast.dev.frame.utils.SDCardUtils;
 import com.fast.dev.frame.utils.StringUtils;
 
 import java.io.File;
-import java.io.InputStream;
 
 /**
  * 说明：Glide配置
@@ -134,9 +128,5 @@ public abstract class GlideConfig implements GlideModule {
      */
     public abstract String setDiskCacheName();
 
-    @Override
-    public void registerComponents(Context context, Glide glide) {
-        glide.register(GlideUrl.class, InputStream.class, new OkHttpUrlLoader.Factory(HttpConfig.get().getOkHttpClient()));
-    }
 }
 

@@ -1,8 +1,5 @@
 package com.fast.dev.frame.http;
 
-import com.fast.dev.frame.utils.LogUtils;
-import com.squareup.okhttp.OkHttpClient;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyManagementException;
@@ -25,6 +22,8 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
+import okhttp3.OkHttpClient;
+
 /**
  * 说明：Https证书管理
  * <p/>
@@ -35,15 +34,6 @@ import javax.net.ssl.X509TrustManager;
  * 版本：verson 1.0
  */
 public class HttpsCerManager {
-    private OkHttpClient okHttpClient;
-
-    public HttpsCerManager(OkHttpClient okHttpClient) {
-        this.okHttpClient = okHttpClient;
-    }
-
-    public void setCertificates(List<InputStream> certificates) {
-        setCertificates(certificates.toArray(new InputStream[]{}), null, null);
-    }
 
     /**
      * 说明：信任所有证书
@@ -67,8 +57,8 @@ public class HttpsCerManager {
                     return null;
                 }
             }},new SecureRandom());
-            okHttpClient.setSslSocketFactory(sslContext.getSocketFactory());
-            okHttpClient.setHostnameVerifier(new HostnameVerifier() {
+            okHttpBuilder.sslSocketFactory(sslContext.getSocketFactory());
+            okHttpBuilder.hostnameVerifier(new HostnameVerifier() {
                 @Override
                 public boolean verify(String hostname, SSLSession session) {
                     return true;
@@ -77,6 +67,16 @@ public class HttpsCerManager {
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    private OkHttpClient.Builder okHttpBuilder;
+
+    public HttpsCerManager(OkHttpClient.Builder builder) {
+        this.okHttpBuilder = builder;
+    }
+
+    public void setCertificates(List<InputStream> certificates) {
+        setCertificates(certificates.toArray(new InputStream[]{}), null, null);
     }
 
     public void setCertificates(InputStream... certificates) {
@@ -96,8 +96,7 @@ public class HttpsCerManager {
                 keyStore.setCertificateEntry(certificateAlias, certificateFactory.generateCertificate(certificate));
                 try {
                     if (certificate != null) { certificate.close(); }
-                } catch (IOException e){
-                    e.printStackTrace();
+                } catch (IOException e) {
                 }
             }
             TrustManagerFactory trustManagerFactory = null;
@@ -110,13 +109,13 @@ public class HttpsCerManager {
 
             return trustManagers;
         } catch (NoSuchAlgorithmException e) {
-            LogUtils.e(e);
+            e.printStackTrace();
         } catch (CertificateException e) {
-            LogUtils.e(e);
+            e.printStackTrace();
         } catch (KeyStoreException e) {
-            LogUtils.e(e);
+            e.printStackTrace();
         } catch (Exception e) {
-            LogUtils.e(e);
+            e.printStackTrace();
         }
         return null;
     }
@@ -131,17 +130,17 @@ public class HttpsCerManager {
             keyManagerFactory.init(clientKeyStore, password.toCharArray());
             return keyManagerFactory.getKeyManagers();
         } catch (KeyStoreException e) {
-            LogUtils.e(e);
+            e.printStackTrace();
         } catch (NoSuchAlgorithmException e) {
-            LogUtils.e(e);
+            e.printStackTrace();
         } catch (UnrecoverableKeyException e) {
-            LogUtils.e(e);
+            e.printStackTrace();
         } catch (CertificateException e) {
-            LogUtils.e(e);
+            e.printStackTrace();
         } catch (IOException e) {
-            LogUtils.e(e);
+            e.printStackTrace();
         } catch (Exception e) {
-            LogUtils.e(e);
+            e.printStackTrace();
         }
         return null;
     }
@@ -153,13 +152,13 @@ public class HttpsCerManager {
             SSLContext sslContext = SSLContext.getInstance("TLS");
 
             sslContext.init(keyManagers, new TrustManager[] { new OkHttpTrustManager(chooseTrustManager(trustManagers)) }, new SecureRandom());
-            okHttpClient.setSslSocketFactory(sslContext.getSocketFactory());
+            okHttpBuilder.sslSocketFactory(sslContext.getSocketFactory());
         } catch (NoSuchAlgorithmException e) {
-            LogUtils.e(e);
+            e.printStackTrace();
         } catch (KeyManagementException e) {
-            LogUtils.e(e);
+            e.printStackTrace();
         } catch (KeyStoreException e) {
-            LogUtils.e(e);
+            e.printStackTrace();
         }
     }
 

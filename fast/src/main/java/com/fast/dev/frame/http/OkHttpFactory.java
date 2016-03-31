@@ -1,10 +1,9 @@
 package com.fast.dev.frame.http;
 
 
-import com.squareup.okhttp.OkHttpClient;
-import java.net.CookieManager;
-import java.net.CookiePolicy;
 import java.util.concurrent.TimeUnit;
+
+import okhttp3.OkHttpClient;
 
 /**
  * 说明：OkHttp工厂
@@ -17,69 +16,53 @@ import java.util.concurrent.TimeUnit;
  */
 public class OkHttpFactory {
 
-    public static OkHttpClient create(long timeout) {
-        OkHttpClient client = new OkHttpClient();
+    public static OkHttpClient create(HttpConfig config) {
+        OkHttpClient.Builder okHttpBuilder = new OkHttpClient.Builder();
+        if (config == null){
+            return okHttpBuilder.build();
+        }
         //设置请求时间
-        client.setConnectTimeout(timeout, TimeUnit.MILLISECONDS);
-        client.setWriteTimeout(timeout, TimeUnit.MILLISECONDS);
-        client.setReadTimeout(timeout, TimeUnit.MILLISECONDS);
-        //请求不重复
-        client.setRetryOnConnectionFailure(false);
+        okHttpBuilder.connectTimeout(config.getTimeout(), TimeUnit.MILLISECONDS);
+        okHttpBuilder.writeTimeout(config.getTimeout(), TimeUnit.MILLISECONDS);
+        okHttpBuilder.readTimeout(config.getTimeout(), TimeUnit.MILLISECONDS);
         //请求支持重定向
-        client.setFollowRedirects(true);
-        //启用cookie
-        client.setCookieHandler(new CookieManager(null, CookiePolicy.ACCEPT_ORIGINAL_SERVER));
-//        //设置OkHttp，支持访问Https网络
-//        if (config != null){
-//            if (config.getCertificates() != null){
-//                setCertificates(client, config.getCertificates());
-//            }
-//
-//            if (!TextUtils.isEmpty(config.getCer())){
-//                setCertificates(client,new ByteArrayInputStream(config.getCer().getBytes()));
-//            }
-//        }
-        return client;
+        okHttpBuilder.followRedirects(config.getRedirects());
+        okHttpBuilder.followSslRedirects(config.getSslRedirects());
+        //设置网络拦截器
+        if (config.getNetworkInterceptorList() != null && !config.getNetworkInterceptorList().isEmpty()){
+            okHttpBuilder.networkInterceptors().addAll(config.getNetworkInterceptorList());
+        }
+        //设置应用拦截器
+        if (config.getInterceptorList() != null && !config.getInterceptorList().isEmpty()){
+            okHttpBuilder.interceptors().addAll(config.getInterceptorList());
+        }
+        if (config.getHostnameVerifier() != null){
+            okHttpBuilder.hostnameVerifier(config.getHostnameVerifier());
+        }
+        //设置证书
+        if (config.getCertificateList() != null && !config.getCertificateList().isEmpty()){
+            HttpsCerManager httpsCerManager = new HttpsCerManager(okHttpBuilder);
+            httpsCerManager.setCertificates(config.getCertificateList());
+        }else if (config.getTrustAll()){
+            HttpsCerManager httpsCerManager = new HttpsCerManager(okHttpBuilder);
+            httpsCerManager.setTrustAll();
+        }
+        if (config.getCookieJar() != null){
+            okHttpBuilder.cookieJar(config.getCookieJar());
+        }
+        if (config.getCache() != null){
+            okHttpBuilder.cache(config.getCache());
+        }
+        if (config.getAuthenticator() != null){
+            okHttpBuilder.authenticator(config.getAuthenticator());
+        }
+        if (config.getDispatcher() != null){
+            okHttpBuilder.dispatcher(config.getDispatcher());
+        }
+        if (config.getProxy() != null){
+            okHttpBuilder.proxy(config.getProxy());
+        }
+        return okHttpBuilder.build();
     }
 
-//    /**
-//     * 说明：设置证书
-//     * @param client
-//     * @param certificates
-//     */
-//    public static void setCertificates(OkHttpClient client,InputStream... certificates) {
-//        try {
-//            CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
-//            KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-//            keyStore.load(null);
-//            int index = 0;
-//            for (InputStream certificate : certificates) {
-//                String certificateAlias = Integer.toString(index++);
-//                keyStore.setCertificateEntry(certificateAlias, certificateFactory.generateCertificate(certificate));
-//
-//                try {
-//                    if (certificate != null)
-//                        certificate.close();
-//                } catch (IOException e) {
-//                }
-//            }
-//
-//            SSLContext sslContext = SSLContext.getInstance("TLS");
-//
-//            TrustManagerFactory trustManagerFactory =
-//                    TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-//
-//            trustManagerFactory.init(keyStore);
-//            sslContext.init
-//                    (
-//                            null,
-//                            trustManagerFactory.getTrustManagers(),
-//                            new SecureRandom()
-//                    );
-//            client.setSslSocketFactory(sslContext.getSocketFactory());
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//
-//    }
 }

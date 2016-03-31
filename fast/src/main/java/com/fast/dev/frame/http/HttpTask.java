@@ -3,19 +3,14 @@ package com.fast.dev.frame.http;
 import android.os.AsyncTask;
 import android.text.TextUtils;
 
-import com.fast.dev.frame.http.callback.ModelHttpCallBack;
 import com.fast.dev.frame.http.callback.BaseHttpCallBack;
 import com.fast.dev.frame.http.callback.JsonHttpCallBack;
+import com.fast.dev.frame.http.callback.ModelHttpCallBack;
 import com.fast.dev.frame.http.callback.StringHttpCallBack;
 import com.fast.dev.frame.utils.Constant;
 import com.fast.dev.frame.utils.GsonUtils;
 import com.fast.dev.frame.utils.LogUtils;
 import com.fast.dev.frame.utils.StringUtils;
-import com.squareup.okhttp.Headers;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,6 +18,13 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.SocketTimeoutException;
+
+import okhttp3.Call;
+import okhttp3.Headers;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 /**
  * 说明：Http请求
@@ -33,7 +35,7 @@ import java.net.SocketTimeoutException;
  * <p/>
  * 版本：verson 1.0
  */
-public class HttpTask extends AsyncTask<Void,Void,ResponseData>{
+public class HttpTask extends AsyncTask<Void,Long,ResponseData>{
 
     private String method;
     private String url;
@@ -58,6 +60,8 @@ public class HttpTask extends AsyncTask<Void,Void,ResponseData>{
         if (StringUtils.isEmpty(requestKey)){
             requestKey = Constant.Http.DEFAULT_KEY;
         }
+        okHttpClient = HttpConfig.get().getOkHttpClient();
+        debug = HttpConfig.get().getDebug();
         //将请求的url及参数组合成一个唯一请求
         HttpTaskHandler.getInstance().addTask(this.requestKey,this);
     }
@@ -65,10 +69,8 @@ public class HttpTask extends AsyncTask<Void,Void,ResponseData>{
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        okHttpClient = HttpConfig.get().getOkHttpClient();
-        debug = HttpConfig.get().getDebug();
-        if (params.headerMap != null){
-            this.headers = Headers.of(params.headerMap);
+        if (params.headers != null){
+            this.headers = params.headers.build();
         }
         if (callback != null){
             callback.onStart();
@@ -85,45 +87,52 @@ public class HttpTask extends AsyncTask<Void,Void,ResponseData>{
             Request.Builder builder = new Request.Builder();
             switch (method){
                 case Constant.Http.GET:
-                    url = UrlUtils.getFullUrl(url,params.getUrlParams());
+                    url = UrlUtils.getFullUrl(url,params.getFormParams(),params.isUrlEncoder());
                     builder.get();
                     break;
                 case Constant.Http.POST:
                     RequestBody body = params.getRequestBody();
                     if (body != null){
-                        builder.post(new ProgressRequestBody(body,callback));
+                        builder.post(new ProgressRequestBody(body,this));
                     }
                     break;
                 case Constant.Http.PUT:
                     RequestBody bodyPut = params.getRequestBody();
                     if (bodyPut != null){
-                        builder.put(new ProgressRequestBody(bodyPut,callback));
+                        builder.put(new ProgressRequestBody(bodyPut,this));
                     }
                     break;
                 case Constant.Http.DELETE:
-                    url = UrlUtils.getFullUrl(url,params.getUrlParams());
+                    url = UrlUtils.getFullUrl(url,params.getFormParams(),params.isUrlEncoder());
                     builder.delete();
                     break;
                 case Constant.Http.HEAD:
-                    url = UrlUtils.getFullUrl(url,params.getUrlParams());
+                    url = UrlUtils.getFullUrl(url,params.getFormParams(),params.isUrlEncoder());
                     builder.head();
                     break;
                 case Constant.Http.PATCH:
                     RequestBody bodyPatch = params.getRequestBody();
                     if (bodyPatch != null){
-                        builder.put(new ProgressRequestBody(bodyPatch,callback));
+                        builder.put(new ProgressRequestBody(bodyPatch,this));
                     }
                     break;
+            }
+            if (params.cacheControl != null){
+                builder.cacheControl(params.cacheControl);
             }
             builder.url(url).tag(srcUrl).headers(headers);
             Request request = builder.build();
             if (debug){
-                LogUtils.i("url="+url+"?"+params.toString());
+                LogUtils.i("url=" + url + "?" + params.toString() + "\n header=" + headers.toString());
             }
+            Call call = okHttpClient.newCall(request);
+            OkHttpCallManager.getInstance().addCall(url,call);
             //执行请求
-            response = okHttpClient.newCall(request).execute();
+            response = call.execute();
         }catch (Exception e){
-            LogUtils.e(e);
+            if (debug){
+                LogUtils.e(e);
+            }
             if (e instanceof SocketTimeoutException){
                 responseData.setTimeout(true);
             }else if (e instanceof InterruptedIOException && TextUtils.equals(e.getMessage(),
@@ -142,7 +151,9 @@ public class HttpTask extends AsyncTask<Void,Void,ResponseData>{
             try {
                 respBody = response.body().string();
             }catch (IOException e){
-                LogUtils.e(e);
+                if (debug){
+                    LogUtils.e(e);
+                }
             }
             responseData.setResponse(respBody);
             responseData.setHeaders(response.headers());
@@ -152,21 +163,48 @@ public class HttpTask extends AsyncTask<Void,Void,ResponseData>{
         return responseData;
     }
 
+    protected void updateProgress(int progress,long networkSpeed,int done){
+        publishProgress((long) progress, networkSpeed, (long) done);
+    }
+
+    @Override
+    protected void onProgressUpdate(Long... values) {
+        super.onProgressUpdate(values);
+        if (callback != null){
+            long progress = values[0];
+            long speed = values[1];
+            boolean done = values[2] == 1L;
+            if (debug){
+                LogUtils.v("当前进度："+progress+" ,当前网速："+speed+" ,完成："+values[2]+" ,是否完成："+(done?"完成":"未完成"));
+            }
+            callback.onProgress((int) progress, values[1], done);
+        }
+    }
+
     @Override
     protected void onPostExecute(ResponseData responseData) {
         super.onPostExecute(responseData);
+        OkHttpCallManager.getInstance().removeCall(url);
         //判断请求是否在这个集合中
         if (!HttpTaskHandler.getInstance().contains(requestKey)){
             return;
+        }
+        if (callback != null){
+            callback.setResponseHeaders(responseData.getHeaders());
+            callback.onResponse(responseData.getHttpResponse(), responseData.getResponse(), responseData.getHeaders());
+            callback.onResponse(responseData.getResponse(),responseData.getHeaders());
         }
         //请求得到响应
         if (!responseData.isResponseNull()) {
             if (responseData.isSuccess()) {//成功的请求
                 String respBody = responseData.getResponse();
                 if (debug){
-                    LogUtils.i("url="+url+"\n result="+respBody);
+                    Headers headers = responseData.getHeaders();
+                    if (headers != null){
+                        LogUtils.i("url="+url+"\n result="+respBody+" \n header="+headers.toString());
+                    }
                 }
-                parseResponseBody(respBody, callback);
+                parseResponseBody(responseData, callback);
             } else {//请求失败
                 int code = responseData.getCode();
                 String msg = responseData.getMessage();
@@ -207,15 +245,17 @@ public class HttpTask extends AsyncTask<Void,Void,ResponseData>{
 
     /**
      * 说明：解析响应数据
-     * @param result 请求的response 内容
+     * @param responseData 请求的response
      * @param callback 请求回调
      */
-    private void parseResponseBody(String result, BaseHttpCallBack callback) {
-
+    private void parseResponseBody(ResponseData responseData, BaseHttpCallBack callback) {
         //回调为空，不向下执行
         if(callback == null){
             return;
         }
+
+        String result = responseData.getResponse();
+
         if (StringUtils.isEmpty(result)) {
             callback.onFailure(StringHttpCallBack.ERROR_RESPONSE_NULL, "数据请求为空");
         }else {
@@ -223,11 +263,13 @@ public class HttpTask extends AsyncTask<Void,Void,ResponseData>{
                 LogUtils.json(result);
             }
             if (callback instanceof StringHttpCallBack){
+                callback.onSuccess(responseData.getHeaders(),result);
                 callback.onSuccess(result);
             }else if (callback instanceof ModelHttpCallBack){
                 try {
                     Object obj = GsonUtils.toBean(result,callback.getClazz());
                     if (obj != null){
+                        callback.onSuccess(responseData.getHeaders(),result);
                         callback.onSuccess(obj);
                     }else {
                         callback.onFailure(BaseHttpCallBack.ERROR_RESPONSE_JSON_EXCEPTION,"数据解析错误");
@@ -238,12 +280,22 @@ public class HttpTask extends AsyncTask<Void,Void,ResponseData>{
                 }
             }else if (callback instanceof JsonHttpCallBack){
                 try {
-                    ((JsonHttpCallBack) callback).onSuccess(new JSONObject(result));
+                    JsonHttpCallBack jsonHttpCallBack = (JsonHttpCallBack)callback;
+                    jsonHttpCallBack.onSuccess(responseData.getHeaders(),result);
+                    jsonHttpCallBack.onSuccess(new JSONObject(result));
                 }catch (JSONException e){
                     LogUtils.e(e);
                     callback.onFailure(BaseHttpCallBack.ERROR_RESPONSE_JSON_EXCEPTION, "数据解析错误");
                 }
             }
         }
+    }
+
+    /**
+     * 说明：获取请求的url
+     * @return
+     */
+    public String getUrl(){
+        return url;
     }
 }

@@ -2,6 +2,9 @@ package com.fast.dev.frame.utils;
 
 import android.text.TextUtils;
 import android.util.Log;
+
+import com.fast.dev.frame.FastFrame;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,7 +21,7 @@ import org.json.JSONObject;
 
 public class LogUtils {
 
-    private static boolean IS_SHOW_LOG = true;
+    private static boolean IS_SHOW_LOG = FastFrame.isDebug;
 
     private static final String DEFAULT_MESSAGE = "execute";
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");

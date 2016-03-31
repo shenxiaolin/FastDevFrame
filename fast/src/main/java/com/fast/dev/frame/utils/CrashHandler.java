@@ -8,6 +8,7 @@ import android.os.Build;
 import android.os.Looper;
 import android.os.SystemClock;
 
+import com.fast.dev.frame.FastFrame;
 import com.fast.dev.frame.ui.ActivityStack;
 
 import java.io.File;
@@ -32,44 +33,42 @@ import java.util.Map;
 public abstract class CrashHandler implements UncaughtExceptionHandler {
 
     private static String crashFile;
-    protected static Context mContext;
-    // 错误日志文件名
+    //错误日志文件名
     private String fileName = "crash";
     // 用来存储设备信息和异常信息
     private Map<String, String> infos = new HashMap<>();
+    //错误信息
+    private StringBuffer sb = new StringBuffer();
+
+    public CrashHandler() {
+        //设置错误文件目录
+        crashFile = setCrashFilePath();
+        //生成错误日志文件名
+        fileName = setFileName();
+    }
 
     /**
-     * 说明：禁止实例化
+     * 初始化
      */
-    public CrashHandler() {
-        init();
+    public void init(){
+        Thread.setDefaultUncaughtExceptionHandler(this);
     }
 
     @Override
     public void uncaughtException(Thread thread, Throwable ex) {
-        //生成错误日志文件名
-        fileName = setFileName();
         // 处理异常
         handleException(ex, crashFile);
-        SystemClock.sleep(3000);
+        SystemClock.sleep(setLoadingTime());
         // 退出应用
         ActivityStack.create().AppExit();
     }
 
-    public static void create(Context context,String filePath) {
-        crashFile = filePath;
-        mContext = context;
-    }
-
-    private void init(){
-        Thread.setDefaultUncaughtExceptionHandler(setHandler());
-    }
-
     /**
-     * 说明：设置处理器
+     * 说明：设置退出应用的等待时间
+     * @return
      */
-    public UncaughtExceptionHandler setHandler(){
-        return this;
+    public long setLoadingTime(){
+        return 3000;
     }
 
     /**
@@ -79,25 +78,25 @@ public abstract class CrashHandler implements UncaughtExceptionHandler {
      *         false代表不处理该异常(可以将该log信息存储起来)然后交给上层(这里就到了系统的异常处理)去处理，
      *         简单来说就是true不会弹出那个错误提示框，false就会弹出
      */
-    private boolean handleException(final Throwable ex, String filePath) {
+    private void handleException(final Throwable ex, String filePath) {
         if (ex == null) {
-            return false;
+            return;
         }
         // 收集设备参数信息
-        collectDeviceInfo(mContext);
+        collectDeviceInfo(FastFrame.getApplication());
         // 保存日志文件
         String upFile = saveCrashInfo2File(ex, filePath);
-        upLog(new File(upFile));
+        //上传服务器
+        upCrashLog(new File(upFile),sb.toString());
         new Thread() {
             @Override
             public void run() {
                 Looper.prepare();
-                show();
+                showCrashTip();
                 Looper.loop();
             }
 
         }.start();
-        return false;
     }
 
     /**
@@ -105,7 +104,7 @@ public abstract class CrashHandler implements UncaughtExceptionHandler {
      *
      * @param ctx
      */
-    public void collectDeviceInfo(Context ctx) {
+    private void collectDeviceInfo(Context ctx) {
         try {
             PackageManager pm = ctx.getPackageManager();
             PackageInfo pi = pm.getPackageInfo(ctx.getPackageName(),
@@ -136,7 +135,6 @@ public abstract class CrashHandler implements UncaughtExceptionHandler {
      * @return 返回文件名称,便于将文件传送到服务器
      */
     private String saveCrashInfo2File(Throwable ex, String filePath) {
-        StringBuffer sb = new StringBuffer();
         for (Map.Entry<String, String> entry : infos.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
@@ -154,17 +152,18 @@ public abstract class CrashHandler implements UncaughtExceptionHandler {
         printWriter.close();
         String result = writer.toString();
         sb.append(result);
-        sb.toString();
-        FileUtils.saveFileCache(sb.toString().getBytes(), filePath, fileName);
+        if (isSaveLocal()){
+            FileUtils.saveFileCache(sb.toString().getBytes(), filePath, fileName);
+        }
         return filePath + fileName;
     }
 
     /**
      * 说明：向服务器发送错误日志
-     *
-     * @param file
+     * @param file 本地错误文件
+     * @param error 错误信息
      */
-    public abstract void upLog(File file);
+    public abstract void upCrashLog(File file,String error);
 
     /**
      * 说明：设置文件名
@@ -174,7 +173,20 @@ public abstract class CrashHandler implements UncaughtExceptionHandler {
     /**
      * 说明：程序崩溃退出时调用
      */
-    public void show(){}
+    public void showCrashTip(){}
+
+    /**
+     * 说明：是否保存本地日志文件
+     */
+    public boolean isSaveLocal(){
+        return true;
+    }
+
+    /**
+     * 说明：设置崩溃日志保存路径
+     * @return
+     */
+    public abstract String setCrashFilePath();
 
 }
 

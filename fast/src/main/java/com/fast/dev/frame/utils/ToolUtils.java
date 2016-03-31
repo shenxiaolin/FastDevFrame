@@ -308,8 +308,8 @@ public final class ToolUtils {
     public static String collectErrorInfo(Throwable ex) {
         Map<String, String> infos = new HashMap<String, String>();
         try {
-            PackageManager pm = FastFrame.getContext().getPackageManager();
-            PackageInfo pi = pm.getPackageInfo(FastFrame.getContext().getPackageName(),
+            PackageManager pm = FastFrame.getApplication().getPackageManager();
+            PackageInfo pi = pm.getPackageInfo(FastFrame.getApplication().getPackageName(),
                     PackageManager.GET_ACTIVITIES);
             if (pi != null) {
                 String versionName = pi.versionName == null ? "null"

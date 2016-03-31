@@ -17,7 +17,7 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Bind {
+public @interface BindView {
     int id();
     boolean click() default false;
 }

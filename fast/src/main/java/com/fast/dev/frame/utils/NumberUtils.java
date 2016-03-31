@@ -12,35 +12,26 @@ import java.text.DecimalFormat;
  * 版本：verson 1.0
  */
 
-public class NumberUtils {
+public final class NumberUtils {
 
     /**
      * 说明：禁止实例化
      */
     private NumberUtils(){}
 
-    private static DecimalFormat decimalFormat;
+    private final static DecimalFormat decimalFormat = new DecimalFormat();
 
     private static DecimalFormat getDecimalFormat(){
-        if (decimalFormat == null) {
-            decimalFormat = new DecimalFormat();
-        }
         return decimalFormat;
     }
 
     /**
      * 说明：String转Int
      * @param str 目标String
-     * @return int
+     * @return int 转换失败返回-1
      */
     public final static int toInt(String str){
-        int num = 0;
-        try {
-            num = Integer.parseInt(str);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return num;
+        return toInt(str,-1);
     }
 
     /**
@@ -53,23 +44,8 @@ public class NumberUtils {
         int num = def;
         try {
             num = Integer.parseInt(str);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return num;
-    }
-
-    /**
-     * 说明：Double转Int
-     * @param str 目标String
-     * @return int
-     */
-    public final static int toInt(Double str){
-        int num = 0;
-        try {
-            num = str.intValue();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (NumberFormatException e) {
+            LogUtils.e(str + " : 转 Interger 失败！");
         }
         return num;
     }
@@ -80,13 +56,57 @@ public class NumberUtils {
      * @return
      */
     public final static double toDouble(String str){
-        double num = 0.0;
+        return toDouble(str,0.0d);
+    }
+
+    /**
+     * 说明：String转Double
+     * @param str 目标String
+     * @param def 默认值
+     * @return
+     */
+    public final static double toDouble(String str,double def){
+        double num = def;
         try {
             num = Double.parseDouble(str);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (NumberFormatException e) {
+            LogUtils.e(str + " : 转 Double 失败！");
         }
         return num;
+    }
+
+    /**
+     * 说明：String转long
+     * @param str
+     * @return 转换异常返回 -1
+     */
+    public static long toLong(String str) {
+        return toLong(str,-1L);
+    }
+
+    /**
+     * 说明：String转long
+     * @param str 目标String
+     * @param def 默认值
+     * @return
+     */
+    public static long toLong(String str,long def) {
+        long num = def;
+        try {
+            num =  Long.parseLong(str);
+        } catch (NumberFormatException e) {
+            LogUtils.e(str + " : 转 Double 失败！");
+        }
+        return num;
+    }
+
+    /**
+     * 说明：字符串转布尔
+     * @param str 目标String
+     * @return
+     */
+    public static boolean toBool(String str) {
+        return Boolean.parseBoolean(str);
     }
 
     /**
@@ -107,7 +127,7 @@ public class NumberUtils {
      * @return 返回double
      */
     public final static double addDouble(String...str){
-        double total = 0.0;
+        double total = 0.0d;
         for (String s : str) {
             total += toDouble(s);
         }
@@ -128,16 +148,100 @@ public class NumberUtils {
     }
 
     /**
-     * 说明：任意类型累加方法
-     * @param obj
-     * @return 返回double
+     * 说明：二进制转十进制
+     * @param str 为只包含0，1的32位字符串，并且以0开头
+     * @return 转换失败返回-1
      */
-    public final static double addObj(Object...obj){
-        double total = 0.0;
-        for (Object object : obj) {
-            total += toDouble(String.valueOf(object));
+    public static String binToDec(String str){
+        if (StringUtils.isEmpty(str)) {
+            return "";
+        }else if (str.length() < 32 || (str.length() == 32 && str.startsWith("0"))) {
+            if (str.matches("[0-1;]+")) {
+                return Integer.valueOf(str,2).toString();
+            }else {
+                LogUtils.e(str + "二进制转十进制出错：字符串不是二进制！！！");
+                return "-1";
+            }
+        }else {
+            LogUtils.e(str + "二进制转十进制出错：长度超出32位！！！");
+            return "-1";
         }
-        return total;
+    }
+
+    /**
+     * 说明：十进制转二进制
+     * @param str
+     * @return
+     */
+    public static String decToBin(String str){
+        if (StringUtils.isEmpty(str)) {
+            return "";
+        }
+        return Integer.toBinaryString(toInt(str));
+    }
+
+    /**
+     * 说明：二进制转十六进制
+     * @param str
+     * @return 转换失败返回-1
+     */
+    public static String binToHex(String str){
+        if (StringUtils.isEmpty(str)) {
+            return "";
+        }
+        if (str.matches("[0-1;]+")) {
+            String dec = binToDec(str);
+            return Integer.toHexString(Integer.parseInt(dec));
+        }else {
+            LogUtils.e(str + "二进制转十六进制：字符串不是二进制！！！");
+            return "-1";
+        }
+    }
+
+    /**
+     * 说明：十六进制转二进制
+     * @param str
+     * @return 转换失败返回""
+     */
+    public static String hexToBin(String str){
+        String result = "";
+        if (!StringUtils.isEmpty(str)) {
+            try {
+                result = decToBin(Integer.valueOf(str,16).toString());
+            } catch (NumberFormatException e) {
+                LogUtils.e(str + "十六进制转二进制异常！！！");
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 说明：十进制转十六进制
+     * @param str
+     * @return
+     */
+    public static String decToHex(String str){
+        if (StringUtils.isEmpty(str)) {
+            return "";
+        }
+        return Integer.toHexString(toInt(str));
+    }
+
+    /**
+     * 说明：十六进制转十进制
+     * @param str
+     * @return 转换失败返回""
+     */
+    public static String hexToDec(String str){
+        String result = "";
+        if (!StringUtils.isEmpty(str)) {
+            try {
+                result = Integer.valueOf(str,16).toString();
+            } catch (NumberFormatException e) {
+                LogUtils.e(str + "十六进制转十进制异常！！！");
+            }
+        }
+        return result;
     }
 
 }

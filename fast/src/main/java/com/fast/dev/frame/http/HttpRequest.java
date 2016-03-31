@@ -2,8 +2,9 @@ package com.fast.dev.frame.http;
 
 import com.fast.dev.frame.http.callback.BaseHttpCallBack;
 import com.fast.dev.frame.utils.Constant;
-import com.fast.dev.frame.utils.LogUtils;
 import com.fast.dev.frame.utils.StringUtils;
+
+import okhttp3.Call;
 
 /**
  * 说明：Http请求类
@@ -30,7 +31,7 @@ public class HttpRequest {
     }
 
     public static void get(String url,RequestParams params,BaseHttpCallBack callback){
-        get(url,params, callback, 0);
+        get(url, params, callback, 0);
     }
     public static void get(String url,RequestParams params,BaseHttpCallBack callback,int timeout){
         if (timeout == 0){
@@ -52,7 +53,7 @@ public class HttpRequest {
     }
 
     public static void post(String url,RequestParams params,BaseHttpCallBack callback){
-        post(url,params, callback, 0);
+        post(url, params, callback, 0);
     }
 
     public static void post(String url,RequestParams params,BaseHttpCallBack callback,int timeout){
@@ -73,7 +74,7 @@ public class HttpRequest {
         put(url, null, callback);
     }
     public static void put(String url,RequestParams params,BaseHttpCallBack callback){
-        put(url,params, callback, 0);
+        put(url, params, callback, 0);
     }
     public static void put(String url,RequestParams params,BaseHttpCallBack callback,int timeout){
         if (timeout == 0){
@@ -113,7 +114,7 @@ public class HttpRequest {
         head(url, null, callback);
     }
     public static void head(String url,RequestParams params,BaseHttpCallBack callback){
-        head(url,params, callback, 0);
+        head(url, params, callback, 0);
     }
     public static void head(String url,RequestParams params,BaseHttpCallBack callback,int timeout){
         if (timeout == 0){
@@ -133,7 +134,7 @@ public class HttpRequest {
         patch(url, null, callback);
     }
     public static void patch(String url,RequestParams params,BaseHttpCallBack callback){
-        patch(url,params, callback, 0);
+        patch(url, params, callback, 0);
     }
     public static void patch(String url,RequestParams params,BaseHttpCallBack callback,int timeout){
         if (timeout == 0){
@@ -143,16 +144,24 @@ public class HttpRequest {
     }
 
     /**
+     * 说明：取消所有key的请求
+     * @param key
+     */
+    public static void cancelKey(String key){
+        HttpTaskHandler.getInstance().removeTask(key);
+    }
+
+    /**
      * 说明：取消请求
      * @param url
      */
     public static void cancel(String url){
         if (!StringUtils.isEmpty(url)){
-            try {
-                HttpConfig.get().getOkHttpClient().cancel(url);
-            }catch (Exception e){
-                LogUtils.e(e);
+            Call call = OkHttpCallManager.getInstance().getCall(url);
+            if (call != null){
+                call.cancel();
             }
+            OkHttpCallManager.getInstance().removeCall(url);
         }
     }
 

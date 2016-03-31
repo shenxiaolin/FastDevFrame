@@ -14,10 +14,8 @@ import java.util.regex.Pattern;
 
 public final class StringUtils {
 
-    private final static Pattern emailer = Pattern
-            .compile("\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*");
-    private final static Pattern phone = Pattern
-            .compile("1\\d{10}$");
+    private final static String emailer = "\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*";
+    private final static String phoner = "1\\d{10}$";
 
     /**
      * 说明：判断给定字符串是否空白串 空白串是指由空格、制表符、回车符、换行符组成的字符串 若输入字符串为null或空字符串，返回true
@@ -37,8 +35,8 @@ public final class StringUtils {
 
     /**
      * 说明：判断多个定字符串是否空
-     *      有一个为null或"",返回true
-     *      全不为null或全不为""返回false
+     *      全为null或"",返回true
+     *      否则返回false
      */
     public static boolean isEmpty(CharSequence ...input) {
         boolean flag = true;
@@ -90,171 +88,48 @@ public final class StringUtils {
     }
 
     /**
+     * 说明：判定是否符合
+     * @param pattern 正则表达式
+     * @param str 验证的字符串
+     * @return
+     */
+    public static boolean matches(String pattern,CharSequence str){
+        if (isEmpty(str) || isEmpty(str)){
+            return false;
+        }
+        Pattern p = Pattern.compile(pattern);
+        return p.matcher(str).matches();
+    }
+
+    /**
+     * 说明：判断是不是一个合法的电子邮件地址（自定义规则）
+     * @param pattern
+     * @param email
+     * @return
+     */
+    public static boolean isEmail(String pattern,CharSequence email) {
+        return matches(pattern,email);
+    }
+
+    /**
      * 说明：判断是不是一个合法的电子邮件地址
      */
     public static boolean isEmail(CharSequence email) {
-        if (isEmpty(email))
-            return false;
-        return emailer.matcher(email).matches();
+        return isEmail(emailer, email);
     }
 
     /**
      * 说明：判断是不是一个合法的手机号码
      */
     public static boolean isPhone(CharSequence phoneNum) {
-        if (isEmpty(phoneNum))
-            return false;
-        return phone.matcher(phoneNum).matches();
-    }
-
-
-    /**
-     * 说明：String转long
-     * @param obj
-     * @return 转换异常返回 0
-     */
-    public static long toLong(String obj) {
-        try {
-            return Long.parseLong(obj);
-        } catch (Exception e) {
-        }
-        return 0;
+        return isPhone(phoner,phoneNum);
     }
 
     /**
-     * 说明：String转double
-     * @param obj
-     * @return 转换异常返回 0
+     * 说明：判断是不是一个合法的手机号码(自定义规则)
      */
-    public static double toDouble(String obj) {
-        try {
-            return Double.parseDouble(obj);
-        } catch (Exception e) {
-        }
-        return 0D;
-    }
-
-    /**
-     * 说明：字符串转布尔
-     * @param b
-     * @return 转换异常返回 false
-     */
-    public static boolean toBool(String b) {
-        try {
-            return Boolean.parseBoolean(b);
-        } catch (Exception e) {
-        }
-        return false;
-    }
-
-    /**
-     * 说明：二进制转十进制
-     * @param str 为只包含0，1的32位字符串，并且以0开头
-     * @return 转换失败返回-1
-     */
-    public static String binToDec(String str){
-        if (isEmpty(str)) {
-            return "";
-        }else if (str.length() < 32 || (str.length() == 32 && str.startsWith("0"))) {
-            if (str.matches("[0-1;]+")) {
-                return Integer.valueOf(str,2).toString();
-            }else {
-                return "-1";
-            }
-        }else {
-            return "-1";
-        }
-    }
-
-    /**
-     * 说明：十进制转二进制
-     * @param str
-     * @return 转换失败返回-1
-     */
-    public static String decToBin(String str){
-        if (isEmpty(str)) {
-            return "";
-        }
-        try {
-            return Integer.toBinaryString(Integer.parseInt(str));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "-1";
-        }
-    }
-
-    /**
-     * 说明：二进制转十六进制
-     * @param str
-     * @return 转换失败返回-1
-     */
-    public static String binToHex(String str){
-        if (isEmpty(str)) {
-            return "";
-        }
-        try {
-            if (str.matches("[0-1;]+")) {
-                String dec = binToDec(str);
-                return Integer.toHexString(Integer.parseInt(dec));
-            }else {
-                return "-1";
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "-1";
-    }
-
-    /**
-     * 说明：十六进制转二进制
-     * @param str
-     * @return 转换失败返回-1
-     */
-    public static String hexToBin(String str){
-        if (isEmpty(str)) {
-            return "";
-        }
-        try {
-            String dec = Integer.valueOf(str,16).toString();
-            return decToBin(dec);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "-1";
-        }
-    }
-
-    /**
-     * 说明：十进制转十六进制
-     * @param str
-     * @return 转换失败返回-1
-     */
-    public static String decToHex(String str){
-        if (isEmpty(str)) {
-            return "";
-        }
-        try {
-            return Integer.toHexString(Integer.parseInt(str));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "-1";
-        }
-    }
-
-    /**
-     * 说明：十六进制转十进制
-     * @param str
-     * @return 转换失败返回-1
-     */
-    public static String hexToDec(String str){
-        if (isEmpty(str)) {
-            return "";
-        }
-        try {
-            return Integer.valueOf(str,16).toString();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "-1";
-        }
+    public static boolean isPhone(String pattern,CharSequence phoneNum) {
+        return matches(pattern,phoneNum);
     }
 
     /**

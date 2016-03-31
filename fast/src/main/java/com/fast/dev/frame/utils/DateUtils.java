@@ -19,7 +19,7 @@ import java.util.TimeZone;
  * 版本：verson 1.0
  */
 
-public class DateUtils {
+public final class DateUtils {
 
     /**
      * 禁止实例化

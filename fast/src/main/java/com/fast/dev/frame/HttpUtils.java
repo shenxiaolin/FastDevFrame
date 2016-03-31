@@ -269,6 +269,14 @@ public class HttpUtils {
     }
 
     /**
+     * 说明：取消同一个key的请求
+     * @param key
+     */
+    public static void cancelKey(String key){
+        HttpRequest.cancelKey(key);
+    }
+
+    /**
      * 说明：下载文件
      *       默认路径SD/应用名/download/
      * @param context

@@ -1,7 +1,10 @@
 package com.fast.dev.frame.http;
 
-import java.util.Iterator;
-import java.util.Map;
+import com.fast.dev.frame.utils.LogUtils;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.List;
 
 /**
  * 说明：工具类，补全url
@@ -14,19 +17,26 @@ import java.util.Map;
  */
 public class UrlUtils {
 
-    public static String getFullUrl(String url,Map<String,String> params){
+    public static String getFullUrl(String url,List<Part> params,boolean urlEncoder){
         StringBuffer urlFull = new StringBuffer();
         urlFull.append(url);
         if (urlFull.indexOf("?",0) < 0 && !params.isEmpty()){
             urlFull.append("?");
         }
-        Iterator<Map.Entry<String,String>> paramsIterator = params.entrySet().iterator();
-        while (paramsIterator.hasNext()){
-            Map.Entry<String,String> entry = paramsIterator.next();
-            String key = entry.getKey();
-            String vaule = entry.getValue();
-            urlFull.append(key).append("=").append(vaule);
-            if (paramsIterator.hasNext()){
+        int flag = 0;
+        for (Part part:params){
+            String key = part.getKey();
+            String value = part.getValue();
+            if (urlEncoder){
+                try {
+                    key = URLEncoder.encode(key,"UTF-8");
+                    value = URLEncoder.encode(value,"UTF-8");
+                }catch (UnsupportedEncodingException e){
+                    LogUtils.e(e);
+                }
+            }
+            urlFull.append(key).append("=").append(value);
+            if (++flag != params.size()){
                 urlFull.append("&");
             }
         }

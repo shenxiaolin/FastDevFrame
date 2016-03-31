@@ -23,9 +23,7 @@ import com.fast.dev.frame.FastFrame;
 
 import java.lang.reflect.Field;
 
-public class UIUtils {
-
-    private static Context mContext = FastFrame.getContext();
+public final class UIUtils {
 
     /**
      * 说明：禁止实例化
@@ -36,7 +34,7 @@ public class UIUtils {
      * 根据手机的分辨率从 dp 的单位 转成为 px(像素)
      */
     public static int dip2px(float dpValue) {
-        Resources r = mContext.getResources();
+        Resources r = FastFrame.getApplication().getResources();
         float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                 dpValue, r.getDisplayMetrics());
         return (int) px;
@@ -46,7 +44,7 @@ public class UIUtils {
      * 根据手机的分辨率从 px(像素) 的单位 转成为 dp
      */
     public static int px2dip(float pxValue) {
-        final float scale = mContext.getResources().getDisplayMetrics().density;
+        final float scale = FastFrame.getApplication().getResources().getDisplayMetrics().density;
         return (int) (pxValue / scale + 0.5f);
     }
 
@@ -54,7 +52,7 @@ public class UIUtils {
      * 根据手机的分辨率从 px(像素) 的单位 转成为 sp
      */
     public static int px2sp(float pxValue) {
-        float fontScale = mContext.getResources().getDisplayMetrics().scaledDensity;
+        float fontScale = FastFrame.getApplication().getResources().getDisplayMetrics().scaledDensity;
         return (int) (pxValue / fontScale + 0.5f);
     }
 
@@ -62,7 +60,7 @@ public class UIUtils {
      * 根据手机的分辨率从 sp 的单位 转成为 px
      */
     public static int sp2px(float spValue) {
-        float fontScale = mContext.getResources().getDisplayMetrics().scaledDensity;
+        float fontScale = FastFrame.getApplication().getResources().getDisplayMetrics().scaledDensity;
         return (int) (spValue * fontScale + 0.5f);
     }
 
@@ -71,7 +69,7 @@ public class UIUtils {
      * @return
      */
     private static Resources getResource() {
-        return mContext.getResources();
+        return FastFrame.getApplication().getResources();
     }
 
     /**
@@ -104,7 +102,7 @@ public class UIUtils {
      * @return
      */
     public static int screenWidth(){
-        WindowManager wm = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
+        WindowManager wm = (WindowManager) FastFrame.getApplication().getSystemService(Context.WINDOW_SERVICE);
         DisplayMetrics dm = new DisplayMetrics();
         wm.getDefaultDisplay().getMetrics(dm);
         return dm.widthPixels;
@@ -114,7 +112,7 @@ public class UIUtils {
      * @return
      */
     public static int screenHeight(){
-        WindowManager wm = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
+        WindowManager wm = (WindowManager) FastFrame.getApplication().getSystemService(Context.WINDOW_SERVICE);
         DisplayMetrics dm = new DisplayMetrics();
         wm.getDefaultDisplay().getMetrics(dm);
         return dm.heightPixels;
@@ -124,7 +122,7 @@ public class UIUtils {
      * @return
      */
     public static float density(){
-        WindowManager wm = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
+        WindowManager wm = (WindowManager) FastFrame.getApplication().getSystemService(Context.WINDOW_SERVICE);
         DisplayMetrics dm = new DisplayMetrics();
         wm.getDefaultDisplay().getMetrics(dm);
         return dm.density;
@@ -143,7 +141,7 @@ public class UIUtils {
             int x = NumberUtils.toInt(field.get(object).toString());
             height = getResource().getDimensionPixelSize(x);
         }catch (Exception e){
-            e.printStackTrace();
+            LogUtils.e(e);
         }
         return height;
     }
@@ -156,7 +154,7 @@ public class UIUtils {
      * @return
      */
     public static View inflate(int id,ViewGroup group,boolean flag){
-        return LayoutInflater.from(mContext).inflate(id,group,flag);
+        return LayoutInflater.from(FastFrame.getApplication()).inflate(id,group,flag);
     }
     /**
      * 说明：获取布局文件
@@ -164,7 +162,7 @@ public class UIUtils {
      * @return
      */
     public static View inflate(int id){
-        return LayoutInflater.from(mContext).inflate(id,null,false);
+        return LayoutInflater.from(FastFrame.getApplication()).inflate(id,null,false);
     }
 }
 

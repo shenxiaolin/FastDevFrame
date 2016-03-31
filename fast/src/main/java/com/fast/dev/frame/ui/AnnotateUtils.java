@@ -58,7 +58,7 @@ public class AnnotateUtils {
         if (fields != null && fields.length >0) {
             for (Field field : fields) {
                 //返回BindView类型的注解内容
-                Bind bindView = field.getAnnotation(Bind.class);
+                BindView bindView = field.getAnnotation(BindView.class);
                 if (bindView != null) {
                     int viewId = bindView.id();
                     boolean click = bindView.click();

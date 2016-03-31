@@ -1,7 +1,8 @@
 package com.fast.dev.frame.http;
 
 
-import com.squareup.okhttp.Headers;
+import okhttp3.Headers;
+import okhttp3.Response;
 
 /**
  * 说明：Http响应内容
@@ -22,6 +23,7 @@ public class ResponseData {
     private String response;//http响应结果
     private boolean success;//是否成功
     private Headers headers;//http headers
+    private Response httpResponse;
 
     public Headers getHeaders() {
         return headers;
@@ -77,5 +79,13 @@ public class ResponseData {
 
     public void setResponseNull(boolean responseNull) {
         this.responseNull = responseNull;
+    }
+
+    public Response getHttpResponse() {
+        return httpResponse;
+    }
+
+    public void setHttpResponse(Response httpResponse) {
+        this.httpResponse = httpResponse;
     }
 }

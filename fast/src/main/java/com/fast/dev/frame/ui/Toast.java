@@ -64,7 +64,7 @@ public class Toast {
      */
     private android.widget.Toast showToast(String msg, int time) {
         if (mToast == null) {
-            mToast = android.widget.Toast.makeText(FastFrame.getContext(), msg, time);
+            mToast = android.widget.Toast.makeText(FastFrame.getApplication(), msg, time);
         } else {
             mToast.setText(msg);
             mToast.setDuration(time);

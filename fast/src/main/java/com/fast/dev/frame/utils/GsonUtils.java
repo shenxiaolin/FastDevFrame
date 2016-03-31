@@ -18,7 +18,7 @@ import java.util.Map;
  * <p/>
  * 版本：verson 1.0
  */
-public class GsonUtils {
+public final class GsonUtils {
 
     private static Gson sGson = null;
 

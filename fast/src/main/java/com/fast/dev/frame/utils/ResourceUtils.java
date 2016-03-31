@@ -10,8 +10,6 @@ package com.fast.dev.frame.utils;
  * 版本：verson 1.0
  */
 
-import android.content.Context;
-
 import com.fast.dev.frame.FastFrame;
 
 import java.io.BufferedReader;
@@ -24,14 +22,6 @@ import java.util.List;
 
 public class ResourceUtils {
 
-    private static Context mContext;
-
-    private static void check(){
-        if (mContext == null){
-            mContext = FastFrame.getContext();
-        }
-    }
-
     /**
      * 说明：禁止实例化
      */
@@ -43,13 +33,12 @@ public class ResourceUtils {
      * @return
      */
     public static InputStream getInputFromAssets(String fileName){
-        check();
         if (StringUtils.isEmpty(fileName)) {
             return null;
         }else {
             InputStreamReader reader = null;
             try {
-                return mContext.getAssets().open(fileName);
+                return FastFrame.getApplication().getAssets().open(fileName);
             } catch (IOException e) {
                 e.printStackTrace();
                 return null;
@@ -63,13 +52,12 @@ public class ResourceUtils {
      * @return
      */
     public static String getFileFromAssets(String fileName){
-        check();
         if (StringUtils.isEmpty(fileName)) {
             return null;
         }else {
             InputStreamReader reader = null;
             try {
-                reader = new InputStreamReader(mContext.getAssets().open(fileName));
+                reader = new InputStreamReader(FastFrame.getApplication().getAssets().open(fileName));
                 return readFile(reader);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -83,10 +71,9 @@ public class ResourceUtils {
      * @return
      */
     public static String getFileFromRaw(int id){
-        check();
         InputStreamReader reader = null;
         try {
-            reader = new InputStreamReader(mContext.getResources().openRawResource(id));
+            reader = new InputStreamReader(FastFrame.getApplication().getResources().openRawResource(id));
             return readFile(reader);
         } catch (Exception e) {
             e.printStackTrace();
@@ -100,7 +87,6 @@ public class ResourceUtils {
      * @return
      */
     public static List<String> getFileToListFromAssets(String fileName){
-        check();
         if (StringUtils.isEmpty(fileName)){
             return null;
         }else {
@@ -108,7 +94,7 @@ public class ResourceUtils {
             List<String> list = new ArrayList<String>();
             BufferedReader bufferedReader = null;
             try {
-                reader = new InputStreamReader(mContext.getResources().getAssets().open(fileName));
+                reader = new InputStreamReader(FastFrame.getApplication().getResources().getAssets().open(fileName));
                 bufferedReader = new BufferedReader(reader);
                 String line = null;
                 while ((line = bufferedReader.readLine()) != null) {
@@ -129,9 +115,8 @@ public class ResourceUtils {
      * @return
      */
     public static List<String> getFileToListFromRaw(int id){
-        check();
         InputStreamReader reader = null;
-        reader = new InputStreamReader(mContext.getResources().openRawResource(id));
+        reader = new InputStreamReader(FastFrame.getApplication().getResources().openRawResource(id));
         List<String> list = new ArrayList<String>();
         BufferedReader bufferedReader = null;
         try {

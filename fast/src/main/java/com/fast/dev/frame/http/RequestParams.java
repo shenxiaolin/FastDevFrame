@@ -3,19 +3,23 @@ package com.fast.dev.frame.http;
 import android.text.TextUtils;
 
 import com.fast.dev.frame.utils.FileUtils;
+import com.fast.dev.frame.utils.GsonUtils;
+import com.fast.dev.frame.utils.LogUtils;
 import com.fast.dev.frame.utils.StringUtils;
-import com.squareup.okhttp.FormEncodingBuilder;
-import com.squareup.okhttp.MultipartBuilder;
-import com.squareup.okhttp.RequestBody;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.ArrayList;
+import java.util.List;
+
+import okhttp3.CacheControl;
+import okhttp3.FormBody;
+import okhttp3.Headers;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 
 /**
  * 说明：Http请求参数
@@ -28,15 +32,31 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class RequestParams {
 
-    protected ConcurrentHashMap<String,String> headerMap;
-    protected ConcurrentHashMap<String,String> urlParams;
-    protected ConcurrentHashMap<String,FileWrapper> fileParams;
+    protected final Headers.Builder headers = new Headers.Builder();
+    private final List<Part> mParams = new ArrayList<>();
+    private final List<Part> mFiles = new ArrayList<>();
 
     protected HttpTaskKey taskKey;
     private String httpTaskKey;
+    private RequestBody requestBody;
+    private boolean applicationJson;
+    private boolean urlEncoder;//是否进行URL编码
+    private JSONObject jsonParams;
+    protected CacheControl cacheControl;
 
     public RequestParams(){
-        this(null);
+        this("");
+    }
+
+    public RequestParams(final String key){
+        HttpTaskKey httpTaskKey = new HttpTaskKey() {
+            @Override
+            public String getHttpTaskKey() {
+                return key;
+            }
+        };
+        this.taskKey = httpTaskKey;
+        init();
     }
 
     public RequestParams(HttpTaskKey key){
@@ -45,34 +65,30 @@ public class RequestParams {
     }
 
     private void init(){
-        headerMap = new ConcurrentHashMap<>();
-        urlParams = new ConcurrentHashMap<>();
-        fileParams = new ConcurrentHashMap<>();
-
-        headerMap.put("charset", "UTF-8");
+        headers.add("charset", "UTF-8");
         if (taskKey != null){
             this.httpTaskKey = taskKey.getHttpTaskKey();
         }
-
-        //添加公共参数
-        Map<String,String> commonParams = HttpConfig.get().getCommonParams();
-        if (commonParams  != null && !commonParams.isEmpty()){
-            urlParams.putAll(commonParams);
+        //添加公共header
+        Headers commonHeaders = HttpConfig.get().getCommonHeader();
+        if (commonHeaders != null && commonHeaders.size() > 0){
+            for (int i = 0; i < commonHeaders.size(); i++){
+                headers.add(commonHeaders.name(i),commonHeaders.value(i));
+            }
         }
-        //添加公共Header
-        Map<String,String> commonHeader = HttpConfig.get().getCommonHeader();
-        if (commonHeader  != null && !commonHeader.isEmpty()){
-            headerMap.putAll(commonHeader);
-        }
+    }
 
+    public String getHttpTaskKey(){
+        return httpTaskKey;
     }
 
     public void put(String key,String value){
         if (value == null){
             value = "";
         }
-        if (!StringUtils.isEmpty(key)){
-            urlParams.put(key,value);
+        Part part = new Part(key,value);
+        if (!StringUtils.isEmpty(key) && !mParams.contains(part)){
+            mParams.add(part);
         }
     }
 
@@ -93,36 +109,79 @@ public class RequestParams {
     }
 
     public void put(String key,File file){
-        if (file == null || !file.exists()){
+        if (file == null || !file.exists() || file.length() == 0){
             return;
         }
-        try {
-            boolean isPng = FileUtils.isFileType(file, "png");
-            if (isPng){
-                put(key,new HttpFileInputStream(new FileInputStream(file),file.getName(),file.length()),ContentType.PNG.getContentType());
-            }
-            boolean isJpg = FileUtils.isFileType(file,"jpg");
-            if (isJpg){
-                put(key,new HttpFileInputStream(new FileInputStream(file),file.getName(),file.length()),ContentType.JPEG.getContentType());
-            }
-            if (!isPng && !isJpg){
-                put(key,new HttpFileInputStream(new FileInputStream(file),file.getName(),file.length()),ContentType.TEXT.getContentType());
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+        boolean isPng = FileUtils.isFileType(file, "png");
+        if (isPng){
+            put(key,file,ContentType.PNG.getContentType());
+            return;
+        }
+        boolean isJpg = FileUtils.isFileType(file,"jpg");
+        if (isJpg){
+            put(key,file,ContentType.JPEG.getContentType());
+            return;
+        }
+        if (!isPng && !isJpg){
+            put(key,new FileWrapper(file,null));
         }
     }
 
-    public void put(String key,HttpFileInputStream stream,String contentType){
-        if (!StringUtils.isEmpty(key) && stream != null){
-            fileParams.put(key, new FileWrapper(stream.getInputStream(), stream.getName(), contentType, stream.getFileSize()));
+    public void put(String key,File file,String contentType){
+        if (checkFile(file)){
+            MediaType mediaType = null;
+            try {
+                mediaType = MediaType.parse(contentType);
+            }catch (Exception e){
+                LogUtils.e(e);
+            }
+            put(key,new FileWrapper(file,mediaType));
         }
     }
 
-    public void putAll(Map<String,String> map){
-        if (map != null && map.size() > 0){
-            urlParams.putAll(map);
+    public void put(String key,File file, MediaType mediaType){
+        if (checkFile(file)){
+            put(key,new FileWrapper(file,mediaType));
         }
+    }
+
+    public void putFiles(String key,List<File> files){
+        if (files != null){
+            for (File file:files){
+                if (checkFile(file)){
+                    put(key,file);
+                }
+            }
+        }
+    }
+
+    public void put(String key,FileWrapper fileWrapper){
+        if (!StringUtils.isEmpty(key) && fileWrapper != null){
+            File file = fileWrapper.getFile();
+            if (checkFile(file)){
+                mFiles.add(new Part(key,fileWrapper));
+            }
+        }
+    }
+
+    public void putPart(String key,List<FileWrapper> fileWrappers){
+        if (fileWrappers != null){
+            for (FileWrapper fileWrappers1:fileWrappers){
+                put(key,fileWrappers1);
+            }
+        }
+    }
+
+    public void putPart(List<Part> parts){
+        if (parts != null && !parts.isEmpty()){
+            this.mParams.addAll(parts);
+        }
+    }
+
+    /*************************************Header****************************************/
+
+    public void putHeader(String line){
+        headers.add(line);
     }
 
     public void putHeader(String key,String value){
@@ -130,7 +189,7 @@ public class RequestParams {
             value = "";
         }
         if (!TextUtils.isEmpty(key)){
-            headerMap.put(key, value);
+            headers.add(key, value);
         }
     }
 
@@ -150,106 +209,142 @@ public class RequestParams {
         putHeader(key, String.valueOf(value));
     }
 
-    public void clearMap(){
-        urlParams.clear();
-        fileParams.clear();
+    /**
+     * 说明：URL编码，只对GET,DELETE,HEAD有效
+     */
+    public void urlEncoder(){
+        urlEncoder = true;
     }
 
-    public String toJSON(){
-        return new JSONObject(urlParams).toString();
+    public boolean isUrlEncoder(){
+        return urlEncoder;
     }
 
-    public Map<String,String> getUrlParams(){
-        return urlParams;
+    public void setCacheControl(CacheControl cacheControl){
+        this.cacheControl = cacheControl;
+    }
+
+    public void setApplicationJson(JSONObject jsonParams){
+        this.applicationJson = true;
+        this.jsonParams = jsonParams;
+    }
+
+    public void isApplicationJson(){
+        applicationJson = true;
+    }
+
+    public void setCustomRequestBody(RequestBody requestBody){
+        this.requestBody = requestBody;
+    }
+
+    public void setRequestBody(String string){
+        setRequestBody(ContentType.TEXT.getContentType(), string);
+    }
+
+    public void setRequestBody(String mediaType,String string){
+        setRequestBody(MediaType.parse(mediaType), string);
+    }
+
+    public void setRequestBody(MediaType mediaType,String string){
+        setCustomRequestBody(RequestBody.create(mediaType, string));
+    }
+
+    public void clear(){
+        mParams.clear();
+        mFiles.clear();
+    }
+
+    public List<Part> getFormParams(){
+        return mParams;
     }
 
     public RequestBody getRequestBody(){
         RequestBody body = null;
-        if (fileParams.size() > 0){
+        if (applicationJson){
+            String json;
+            if (jsonParams == null){
+                JSONObject jsonObject = new JSONObject();
+                for (Part part:mParams){
+                    try {
+                        jsonObject.put(part.getKey(),part.getValue());
+                    }catch (JSONException e){
+                        LogUtils.e(e);
+                    }
+                }
+                json = GsonUtils.toJson(jsonObject);
+            }else {
+                json = GsonUtils.toJson(jsonParams);
+            }
+            body = RequestBody.create(MediaType.parse(ContentType.JSON.getContentType()),json);
+        }else if (requestBody != null){
+            body = requestBody;
+        }else if (mFiles.size() > 0){
             boolean hasData = false;
-            MultipartBuilder builder = new MultipartBuilder();
-            builder.type(MultipartBuilder.FORM);
-            for (ConcurrentHashMap.Entry<String,String> entry:urlParams.entrySet()){
-                builder.addFormDataPart(entry.getKey(),entry.getValue());
+            MultipartBody.Builder builder = new MultipartBody.Builder();
+            builder.setType(MultipartBody.FORM);
+            for (Part part:mParams){
+                builder.addFormDataPart(part.getKey(),part.getValue());
                 hasData = true;
             }
-            for (ConcurrentHashMap.Entry<String,FileWrapper> entry:fileParams.entrySet()){
-                FileWrapper file = entry.getValue();
-                if (file.inputStream != null){
+            for (Part part:mFiles){
+                FileWrapper file = part.getFileWrapper();
+                if (file != null){
+                    builder.addFormDataPart(part.getKey(),file.getFileName(),RequestBody.create(file.getMediaType(),file.getFile()));
                     hasData = true;
-                    builder.addFormDataPart(entry.getKey(),file.getFileName(),new IORequestBody(
-                            file.getContentType(),file.getFileSize(),file.getInputStream()
-                    ));
                 }
             }
             if (hasData){
                 body = builder.build();
             }
         }else {
-            FormEncodingBuilder builder = new FormEncodingBuilder();
+            FormBody.Builder builder = new FormBody.Builder();
             boolean hasData = false;
-            for (ConcurrentHashMap.Entry<String, String> entry : urlParams.entrySet()) {
-                builder.add(entry.getKey(), entry.getValue());
-                hasData = true;
+            for (Part part:mParams){
+                builder.add(part.getKey(),part.getValue());
+                hasData =true;
             }
-            if (hasData) {
+            if (hasData){
                 body = builder.build();
             }
         }
         return body;
     }
 
-    public String getHttpTaskKey(){
-        return httpTaskKey;
+    private boolean checkFile(File file){
+        if (file == null || !file.exists() || file.length() == 0 || !file.isFile()){
+            return false;
+        }
+        return true;
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        for (ConcurrentHashMap.Entry<String,String> entry:urlParams.entrySet()){
-            if (sb.length() > 0){
-                sb.append("&");
-            }
-            sb.append(entry.getKey()+"="+entry.getValue());
-        }
-        for (ConcurrentHashMap.Entry<String,FileWrapper> entry:fileParams.entrySet()){
-            if (sb.length() > 0){
-                sb.append("&");
-            }
-            sb.append(entry.getKey()+"="+entry.getValue().getContentType());
-        }
-        return sb.toString();
-    }
+        StringBuilder result = new StringBuilder();
+        for (Part part:mParams){
+            String key = part.getKey();
+            String value = part.getValue();
+            if (result.length() > 0)
+                result.append("&");
 
-    public static class FileWrapper{
-        private InputStream inputStream;
-        private String fileName;
-        private String contentType;
-        private long fileSize;
-
-        public FileWrapper(InputStream stream,String name,String type,long size){
-            this.inputStream = stream;
-            this.fileName = name;
-            this.contentType = type;
-            this.fileSize = size;
+            result.append(key);
+            result.append("=");
+            result.append(value);
         }
 
-        public String getFileName(){
-            if (fileName != null){
-                return fileName;
-            }else {
-                return "no file name";
-            }
+        for (Part part:mFiles){
+            String key = part.getKey();
+            if (result.length() > 0)
+                result.append("&");
+
+            result.append(key);
+            result.append("=");
+            result.append("FILE");
         }
-        public String getContentType(){
-            return contentType;
+
+        if(jsonParams != null) {
+            result.append(jsonParams.toString());
         }
-        public long getFileSize(){
-            return fileSize;
-        }
-        public InputStream getInputStream(){
-            return inputStream;
-        }
+        return result.toString();
     }
 
 }

@@ -41,7 +41,7 @@ public final class AndroidInfoUtils {
      */
     public static boolean isNetConnected() {
         try {
-            ConnectivityManager connectivityManager = (ConnectivityManager) FastFrame.getContext()
+            ConnectivityManager connectivityManager = (ConnectivityManager) FastFrame.getApplication()
                     .getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo network = connectivityManager.getActiveNetworkInfo();
             if (connectivityManager != null) {
@@ -65,7 +65,7 @@ public final class AndroidInfoUtils {
     public static String getImeiCode() {
         String result = "";
         try {
-            final TelephonyManager tm = (TelephonyManager) FastFrame.getContext()
+            final TelephonyManager tm = (TelephonyManager) FastFrame.getApplication()
                     .getSystemService(Context.TELEPHONY_SERVICE);
             result = tm.getDeviceId();
         } catch (Exception e) {
@@ -82,7 +82,7 @@ public final class AndroidInfoUtils {
     public static String getImsiCode() {
         String result = "";
         try {
-            final TelephonyManager tm = (TelephonyManager) FastFrame.getContext()
+            final TelephonyManager tm = (TelephonyManager) FastFrame.getApplication()
                     .getSystemService(Context.TELEPHONY_SERVICE);
             result = tm.getSubscriberId();
         } catch (Exception e) {
@@ -97,7 +97,7 @@ public final class AndroidInfoUtils {
      * @return MacAddress String
      */
     public static String getAndroidId() {
-        String androidId = Secure.getString(FastFrame.getContext().getContentResolver(),
+        String androidId = Secure.getString(FastFrame.getApplication().getContentResolver(),
                 Secure.ANDROID_ID);
         return androidId;
     }
@@ -110,7 +110,7 @@ public final class AndroidInfoUtils {
     public static String getMobilNumber() {
         String result = "";
         try {
-            final TelephonyManager tm = (TelephonyManager) FastFrame.getContext()
+            final TelephonyManager tm = (TelephonyManager) FastFrame.getApplication()
                     .getSystemService(Context.TELEPHONY_SERVICE);
             result = tm.getLine1Number();
         } catch (Exception e) {
@@ -136,7 +136,7 @@ public final class AndroidInfoUtils {
     public static String getMacAddress() {
         String res = "";
         try {
-            final WifiManager wifiManager = (WifiManager) FastFrame.getContext()
+            final WifiManager wifiManager = (WifiManager) FastFrame.getApplication()
                     .getSystemService(Context.WIFI_SERVICE);
             final WifiInfo info = wifiManager.getConnectionInfo();
             if (null != info) {
@@ -159,8 +159,8 @@ public final class AndroidInfoUtils {
      */
     public static String getAppVersionName() {
         try {
-            PackageInfo info = FastFrame.getContext().getPackageManager().getPackageInfo(
-                    FastFrame.getContext().getPackageName(), 0);
+            PackageInfo info = FastFrame.getApplication().getPackageManager().getPackageInfo(
+                    FastFrame.getApplication().getPackageName(), 0);
             return info.versionName;
         } catch (NameNotFoundException e) {
             e.printStackTrace();
@@ -175,8 +175,8 @@ public final class AndroidInfoUtils {
      */
     public static int getAppVersionCode() {
         try {
-            PackageInfo info = FastFrame.getContext().getPackageManager().getPackageInfo(
-                    FastFrame.getContext().getPackageName(), 0);
+            PackageInfo info = FastFrame.getApplication().getPackageManager().getPackageInfo(
+                    FastFrame.getApplication().getPackageName(), 0);
             return info.versionCode;
         } catch (NameNotFoundException e) {
             e.printStackTrace();
@@ -196,7 +196,7 @@ public final class AndroidInfoUtils {
      */
     public static int getNetWorkType() {
         int strNetworkType = 0;
-        NetworkInfo networkInfo = ((ConnectivityManager) FastFrame.getContext().getSystemService(Context.CONNECTIVITY_SERVICE))
+        NetworkInfo networkInfo = ((ConnectivityManager) FastFrame.getApplication().getSystemService(Context.CONNECTIVITY_SERVICE))
                 .getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
             if (networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
@@ -284,7 +284,7 @@ public final class AndroidInfoUtils {
      * @return 当前内存大小
      */
     public static int getDeviceUsableMemory() {
-        ActivityManager am = (ActivityManager) FastFrame.getContext()
+        ActivityManager am = (ActivityManager) FastFrame.getApplication()
                 .getSystemService(Context.ACTIVITY_SERVICE);
         MemoryInfo mi = new MemoryInfo();
         am.getMemoryInfo(mi);
@@ -299,7 +299,7 @@ public final class AndroidInfoUtils {
     public static String getCurProcessName(){
         int pid = android.os.Process.myPid();
 
-        ActivityManager activityManager = (ActivityManager) FastFrame.getContext()
+        ActivityManager activityManager = (ActivityManager) FastFrame.getApplication()
                 .getSystemService(Context.ACTIVITY_SERVICE);
 
         for (ActivityManager.RunningAppProcessInfo appProcess : activityManager
