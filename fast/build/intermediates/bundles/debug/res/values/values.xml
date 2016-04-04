@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- From: file:/E:/studio/FastDevFrame/fast/src/main/res/values/colors.xml -->
+    <eat-comment/>
+    <color name="md_back_color">#FF7EC2E2</color>
+    <color name="md_ripple_checked">#FF7EC2E2</color>
+    <color name="md_ripple_normal">#1E000000</color>
+    <color name="md_solid_checked">#FF0187CE</color>
+    <color name="md_solid_checked_disable">#aaaaaa</color>
+    <color name="md_solid_disable">#FFFFFF</color>
+    <color name="md_solid_normal">#ECECEC</color>
+    <color name="md_solid_shadow">#33000000</color>
+    <declare-styleable name="SwitchButton"><attr format="reference" name="thumbDrawable"/><attr format="color|reference" name="thumbColor"/><attr format="dimension|reference" name="thumbMargin"/><attr format="dimension|reference" name="thumbMarginTop"/><attr format="dimension|reference" name="thumbMarginLeft"/><attr format="dimension|reference" name="thumbMarginRight"/><attr format="dimension|reference" name="thumbMarginBottom"/><attr format="dimension|reference" name="thumbWidth"/><attr format="dimension|reference" name="thumbHeight"/><attr format="dimension|reference" name="thumbRadius"/><attr format="dimension|reference" name="backRadius"/><attr format="color|reference" name="backColor"/><attr format="reference" name="backDrawable"/><attr format="boolean" name="fadeBack"/><attr format="float" name="backMeasureRatio"/><attr format="integer" name="animationDuration"/><attr format="color|reference" name="tintColor"/></declare-styleable>
+    <!-- From: file:/E:/studio/FastDevFrame/fast/src/main/res/values/demens.xml -->
+    <eat-comment/>
+    <dimen name="md_thumb_ripple_size">42dp</dimen>
+    <dimen name="md_thumb_shadow_inset">11dp</dimen>
+    <dimen name="md_thumb_shadow_inset_bottom">10dp</dimen>
+    <dimen name="md_thumb_shadow_inset_top">11dp</dimen>
+    <dimen name="md_thumb_shadow_offset">2dp</dimen>
+    <dimen name="md_thumb_shadow_size">21dp</dimen>
+    <dimen name="md_thumb_solid_inset">11dp</dimen>
+    <dimen name="md_thumb_solid_size">20dp</dimen>
+    <!-- From: file:/E:/studio/FastDevFrame/fast/src/main/res/values/styles.xml -->
+    <eat-comment/>
+    <style name="SwitchButtonMD">
+        <item name="thumbDrawable">@drawable/button_md_thumb</item>
+        <item name="backColor">@color/md_back_color</item>
+        <item name="backMeasureRatio">1.45</item>
+        <item name="thumbMarginLeft">-16dp</item>
+        <item name="thumbMarginTop">-14dp</item>
+        <item name="thumbMarginRight">-16dp</item>
+        <item name="thumbMarginBottom">-14dp</item>
+        <item name="thumbWidth">@dimen/md_thumb_ripple_size</item>
+        <item name="thumbHeight">@dimen/md_thumb_ripple_size</item>
+    </style>
+</resources>
