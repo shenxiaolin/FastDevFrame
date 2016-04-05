@@ -1,27 +1,28 @@
 package com.fast.dev.frame;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import com.fast.dev.frame.http.HttpTaskKey;
-import com.fast.dev.frame.ui.SupportFragment;
+import com.fast.dev.frame.ui.FrameFragment;
 import com.fast.dev.frame.ui.Toast;
 
 /**
- * 说明：Fragment基类(V4)
+ * 说明：Fragment基类
  * <p/>
  * 作者：fanly
  * <p/>
- * 时间：2016/3/26 1:23
+ * 时间：2016/4/5 16:25
  * <p/>
  * 版本：verson 1.0
  */
-public abstract class BaseSupportFragment extends SupportFragment implements HttpTaskKey {
+public abstract class BaseFragment extends FrameFragment implements HttpTaskKey {
 
-    private FragmentActivity mActivity;
+    private Activity mActivity;
 
     @Override
     protected View inflaterView(LayoutInflater inflater, ViewGroup container, Bundle bundle) {

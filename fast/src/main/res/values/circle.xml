@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="FastDevFrameCircleProgressBar">
+        <attr name="FastDevFrameborder" format="dimension"/>
+        <attr name="FastDevFramecolorSequence" format="reference"/>
+        <attr name="FastDevFramesweepAnimationDurationMillis" format="integer" />
+        <attr name="FastDevFrameangleAnimationDurationMillis" format="integer" />
+        <attr name="FastDevFrameminSweepAngle" format="integer" />
+    </declare-styleable>
+    <array name="FastDevFrame_circle_default_color_sequence">
+        <item>@color/FastDevFrame_circular_red</item>
+        <item>@color/FastDevFrame_circular_blue</item>
+        <item>@color/FastDevFrame_circular_yellow</item>
+        <item>@color/FastDevFrame_circular_green</item>
+    </array>
+    <color name="FastDevFrame_circular_red">#F90101</color>
+    <color name="FastDevFrame_circular_blue">#0266C8</color>
+    <color name="FastDevFrame_circular_yellow">#F2B50F</color>
+    <color name="FastDevFrame_circular_green">#00933B</color>
+</resources>

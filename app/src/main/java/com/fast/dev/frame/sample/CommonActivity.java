@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+import com.fast.dev.frame.BaseActivity;
 import com.fast.dev.frame.ui.AbstractActivity;
 
 /**
@@ -15,7 +16,7 @@ import com.fast.dev.frame.ui.AbstractActivity;
  * <p/>
  * 版本：verson 1.0
  */
-public class CommonActivity extends AbstractActivity {
+public class CommonActivity extends BaseActivity {
     @Override
     public int setRootView() {
         return 0;

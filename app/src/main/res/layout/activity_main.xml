@@ -5,17 +5,10 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/tv_1"
+        android:id="@+id/jjtv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="123"
-        android:gravity="center"
-        android:textSize="24sp"/>
-    <TextView
-        android:id="@+id/tv"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
+        android:text="JJSearch"
         android:gravity="center"
         android:textSize="24sp"/>
 
