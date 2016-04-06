@@ -1,4 +1,4 @@
-package com.fast.dev.frame.ui;
+package com.fast.dev.frame.tools;
 
 import com.fast.dev.frame.utils.AndroidInfoUtils;
 import com.fast.dev.frame.utils.CrashHandler;
@@ -16,7 +16,7 @@ import java.io.File;
  * <p/>
  * 版本：verson 1.0
  */
-public class DefaultCrashHandler extends CrashHandler{
+public class SimpleCrashHandler extends CrashHandler{
     @Override
     public void upCrashLog(File file, String error) {
 

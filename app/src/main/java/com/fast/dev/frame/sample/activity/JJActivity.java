@@ -1,4 +1,4 @@
-package com.fast.dev.frame.sample;
+package com.fast.dev.frame.sample.activity;
 
 import android.os.Bundle;
 import android.view.View;
@@ -12,6 +12,7 @@ import com.cjj.sva.anim.controller.JJCircleToLineAlphaController;
 import com.cjj.sva.anim.controller.JJCircleToSimpleLineController;
 import com.cjj.sva.anim.controller.JJDotGoPathController;
 import com.cjj.sva.anim.controller.JJScaleCircleAndTailController;
+import com.fast.dev.frame.sample.R;
 import com.fast.dev.frame.ui.ContentView;
 
 import butterknife.Bind;

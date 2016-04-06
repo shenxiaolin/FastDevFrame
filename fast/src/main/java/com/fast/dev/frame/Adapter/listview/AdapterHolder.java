@@ -1,24 +1,26 @@
 package com.fast.dev.frame.Adapter.listview;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.SparseArray;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import com.fast.dev.frame.glide.GlideLoader;
+import com.fast.dev.frame.utils.StringUtils;
+import com.fast.dev.frame.utils.UIUtils;
 
 /**
- *
  * 说明：通用Holder
- *
+ * <p/>
  * 作者：fanly
- *
+ * <p/>
  * 时间：2015-9-15
- *
+ * <p/>
  * 版本：verson 1.0
- *
  */
 
 public class AdapterHolder {
@@ -26,14 +28,11 @@ public class AdapterHolder {
     private final SparseArray<View> mViews;
     private final int mPosition;
     private final View mConvertView;
-    private Context mContext;
 
     private AdapterHolder(ViewGroup parent, int layoutId, int position) {
         this.mPosition = position;
         this.mViews = new SparseArray<View>();
-        mContext = parent.getContext();
-        mConvertView = LayoutInflater.from(mContext).inflate(
-                layoutId, parent, false);
+        mConvertView = UIUtils.inflate(layoutId,parent,false);
         // setTag
         mConvertView.setTag(this);
     }
@@ -86,6 +85,69 @@ public class AdapterHolder {
     }
 
     /**
+     * 说明：获取TextView
+     *
+     * @param viewId
+     * @return
+     */
+    public TextView getTextView(int viewId) {
+        return (TextView) getView(viewId);
+    }
+
+    /**
+     * 说明：获取ImageView
+     *
+     * @param viewId
+     * @return
+     */
+    public ImageView getImageView(int viewId) {
+        return (ImageView) getView(viewId);
+    }
+
+    /**
+     * 说明：获取Button
+     *
+     * @param viewId
+     * @return
+     */
+    public Button getButton(int viewId) {
+        return (Button) getView(viewId);
+    }
+
+    /**
+     * 说明：获取CheckBox
+     *
+     * @param viewId
+     * @return
+     */
+    public CheckBox getCheckBox(int viewId) {
+        return (CheckBox) getView(viewId);
+    }
+
+    /**
+     * 说明：获取EditText
+     *
+     * @param viewId
+     * @return
+     */
+    public EditText getEditText(int viewId) {
+        return (EditText) getView(viewId);
+    }
+
+    /**
+     * 为TextView设置字符串
+     *
+     * @param viewId
+     * @param resId
+     * @return
+     */
+    public AdapterHolder setText(int viewId, int resId) {
+        TextView view = getView(viewId);
+        view.setText(resId);
+        return this;
+    }
+
+    /**
      * 为TextView设置字符串
      *
      * @param viewId
@@ -108,7 +170,6 @@ public class AdapterHolder {
     public AdapterHolder setImageResource(int viewId, int drawableId) {
         ImageView view = getView(viewId);
         view.setImageResource(drawableId);
-
         return this;
     }
 
@@ -125,18 +186,20 @@ public class AdapterHolder {
         return this;
     }
 
-//    /**
-//     * 为ImageView设置图片
-//     *
-//     * @param viewId
-//     * @param url
-//     * @return
-//     */
-//    public AdapterHolder setImageByUrl(int viewId, String url) {
-//        ImageView image = getView(viewId);
-//        ImageUtils.getInstance().display(mContext,url,image);
-//        return this;
-//    }
+    /**
+     * 为ImageView设置图片
+     *
+     * @param viewId
+     * @param url
+     * @return
+     */
+    public AdapterHolder setImage(int viewId, String url) {
+        if (!StringUtils.isEmpty(url)){
+            ImageView image = getView(viewId);
+            GlideLoader.into(url, image);
+        }
+        return this;
+    }
 
     public int getPosition() {
         return mPosition;

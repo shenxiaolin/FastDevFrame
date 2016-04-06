@@ -1,6 +1,6 @@
 package com.fast.dev.frame.sample;
 
-import com.fast.dev.frame.ui.DefaultCrashHandler;
+import com.fast.dev.frame.tools.SimpleCrashHandler;
 import com.fast.dev.frame.ui.Toast;
 
 /**
@@ -12,7 +12,7 @@ import com.fast.dev.frame.ui.Toast;
  * <p/>
  * 版本：verson 1.0
  */
-public class MyCrashHanlder extends DefaultCrashHandler{
+public class MyCrashHanlder extends SimpleCrashHandler {
 
     private final static MyCrashHanlder crashHanlder = new MyCrashHanlder();
 

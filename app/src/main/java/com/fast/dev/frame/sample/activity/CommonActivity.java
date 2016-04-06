@@ -1,4 +1,4 @@
-package com.fast.dev.frame.sample;
+package com.fast.dev.frame.sample.activity;
 
 import android.content.Intent;
 import android.os.Bundle;

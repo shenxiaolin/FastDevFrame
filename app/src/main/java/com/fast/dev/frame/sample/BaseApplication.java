@@ -6,7 +6,7 @@ import com.fast.dev.frame.FastFrame;
 import com.fast.dev.frame.http.HttpConfig;
 
 /**
- * 说明：
+ * 说明：BaseApplication
  * <p/>
  * 作者：fanly
  * <p/>
@@ -19,9 +19,11 @@ public class BaseApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        //初始化框架
         FastFrame.init(this);
+        //异常处理
         MyCrashHanlder.getInstance().init();
-
+        //网络框架设置初始化
         HttpConfig.Builder builder = new HttpConfig.Builder();
         builder.setTrustAll(true);
         builder.build().init();

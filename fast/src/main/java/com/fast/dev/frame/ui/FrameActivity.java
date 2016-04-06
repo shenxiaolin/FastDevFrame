@@ -45,6 +45,20 @@ public abstract class FrameActivity extends AppCompatActivity implements OnClick
         }
     };
 
+    @Override
+    protected void onCreate(Bundle bundle) {
+        super.onCreate(bundle);
+        setContentViewBefor();
+        if (!AnnotateUtils.initContentView(this)){
+            setContentView(setRootView());
+        }
+        if (useAnnotate()){
+            AnnotateUtils.init(this);
+        }
+        initializer(bundle);
+        registerBroadcast();
+    }
+
     @SuppressWarnings("unchecked")
     protected <T extends View> T bind(int id) {
         return (T) findViewById(id);
@@ -96,16 +110,12 @@ public abstract class FrameActivity extends AppCompatActivity implements OnClick
     @Override
     public void unRegisterBroadcast() {}
 
-    @Override
-    protected void onCreate(Bundle bundle) {
-        super.onCreate(bundle);
-        setContentViewBefor();
-        if (!AnnotateUtils.initContentView(this)){
-            setContentView(setRootView());
-        }
-        AnnotateUtils.init(this);
-        initializer(bundle);
-        registerBroadcast();
+    /**
+     * 说明：使用注解
+     * @return
+     */
+    protected boolean useAnnotate(){
+        return false;
     }
 
     /**
