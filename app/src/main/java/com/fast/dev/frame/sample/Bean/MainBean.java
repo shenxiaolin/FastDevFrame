@@ -11,6 +11,7 @@ package com.fast.dev.frame.sample.Bean;
  */
 public class MainBean {
 
+
     private String url;
     private String des;
 
@@ -34,4 +35,5 @@ public class MainBean {
     public void setDes(String des) {
         this.des = des;
     }
+
 }

@@ -1,5 +1,7 @@
 package com.fast.dev.frame.sample.adapter;
 
+import android.support.v7.widget.RecyclerView;
+
 import com.fast.dev.frame.Adapter.recycleview.BaseRecyclerAdapter;
 import com.fast.dev.frame.Adapter.recycleview.RecyclerViewHolder;
 import com.fast.dev.frame.sample.Bean.MainBean;
@@ -18,13 +20,19 @@ import java.util.List;
  */
 public class MainAdapter extends BaseRecyclerAdapter<MainBean>{
 
-    public MainAdapter(int layoutId, List<MainBean> data) {
-        super(layoutId, data);
+    public MainAdapter(RecyclerView recyclerView,List<MainBean> data) {
+        super(recyclerView,data);
     }
 
     @Override
     public void convert(RecyclerViewHolder holder, MainBean item, int position) {
         holder.setText(R.id.tv,item.getDes());
-        holder.setImage(R.id.iv,item.getUrl());
+        holder.setImage(R.id.iv, item.getUrl());
     }
+
+    @Override
+    public int getItemLayoutId(int viewType) {
+        return R.layout.item_one;
+    }
+
 }

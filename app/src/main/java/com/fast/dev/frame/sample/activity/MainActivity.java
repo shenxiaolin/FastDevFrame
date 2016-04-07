@@ -1,15 +1,16 @@
 package com.fast.dev.frame.sample.activity;
 
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.TextView;
 
 import com.fast.dev.frame.Adapter.recycleview.BaseRecyclerAdapter;
 import com.fast.dev.frame.sample.Bean.MainBean;
 import com.fast.dev.frame.sample.R;
 import com.fast.dev.frame.sample.adapter.MainAdapter;
 import com.fast.dev.frame.tools.BackTools;
+import com.fast.dev.frame.tools.RecyclerTools;
 import com.fast.dev.frame.tools.SimpleBackExit;
 import com.fast.dev.frame.ui.ContentView;
 
@@ -18,6 +19,7 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 @ContentView(R.layout.activity_main)
 public class MainActivity extends CommonActivity {
@@ -25,8 +27,11 @@ public class MainActivity extends CommonActivity {
 
     @Bind(R.id.recyclerView)
     RecyclerView recyclerView;
+    @Bind(R.id.tv_emtpy)
+    TextView tv_empty;
 
     private MainAdapter mAdapter;
+    private RecyclerTools mRecyclerTools;
     private List<MainBean> mData;
 
     @Override
@@ -34,11 +39,14 @@ public class MainActivity extends CommonActivity {
         super.onInit(bundle);
         ButterKnife.bind(this);
 
-
-        mAdapter = new MainAdapter(R.layout.item_main,mData);
         getDatas();
+
+        mRecyclerTools = new RecyclerTools();
+        mAdapter = new MainAdapter(recyclerView,mData);
+        mRecyclerTools.setRecyclerView(recyclerView);
         recyclerView.setAdapter(mAdapter);
         mAdapter.refresh(mData);
+        mAdapter.setEmptyView(tv_empty);
         mAdapter.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
@@ -50,19 +58,29 @@ public class MainActivity extends CommonActivity {
                         shortToast(mData.get(position).getDes());
                         break;
                     default:
+                        shortToast(mData.get(position).getDes());
                         break;
                 }
             }
         });
-        //如果可以确定每个item的高度是固定的，设置这个选项可以提高性能
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
+    }
+
+    @OnClick(R.id.btn_add)
+    public void addData(){
+//        getDatas();
+        mData.get(1).setDes("修改数据");
+        mAdapter.refresh(mData);
+        shortToast("修改成功！");
     }
 
     public List<MainBean> getDatas(){
+        String url = "http://img.pconline.com.cn/images/upload/upc/tx/itbbs/1402/27/c4/31612517_1393474458218_mthumb.jpg";
         mData = new ArrayList<>();
-        mData.add(new MainBean("http://img.pconline.com.cn/images/upload/upc/tx/itbbs/1402/27/c4/31612517_1393474458218_mthumb.jpg","JJSearch"));
-        mData.add(new MainBean("http://img.pconline.com.cn/images/upload/upc/tx/itbbs/1402/27/c4/31612517_1393474458218_mthumb.jpg","Hello!"));
+        mData.add(new MainBean(url,"JJSearch"));
+        mData.add(new MainBean(url,"测试"));
+        for (int i = 1;i < 101;i++){
+            mData.add(new MainBean(url,i+""));
+        }
         return mData;
     }
 
