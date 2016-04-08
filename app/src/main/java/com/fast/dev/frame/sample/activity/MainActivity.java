@@ -55,7 +55,7 @@ public class MainActivity extends CommonActivity {
                         showActivity(JJActivity.class);
                         break;
                     case 1:
-                        shortToast(mData.get(position).getDes());
+                        showActivity(BannerActivity.class);
                         break;
                     default:
                         shortToast(mData.get(position).getDes());
@@ -77,7 +77,7 @@ public class MainActivity extends CommonActivity {
         String url = "http://img.pconline.com.cn/images/upload/upc/tx/itbbs/1402/27/c4/31612517_1393474458218_mthumb.jpg";
         mData = new ArrayList<>();
         mData.add(new MainBean(url,"JJSearch"));
-        mData.add(new MainBean(url,"测试"));
+        mData.add(new MainBean(url,"Banner展示"));
         for (int i = 1;i < 101;i++){
             mData.add(new MainBean(url,i+""));
         }
