@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <declare-styleable name="BannerView">
+        <attr name="canLoop" format="boolean"></attr>
+    </declare-styleable>
     <declare-styleable name="SwitchButton">
         <attr name="thumbDrawable" format="reference"/>
         <attr name="thumbColor" format="color|reference"/>
